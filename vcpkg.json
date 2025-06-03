@@ -1,0 +1,12 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+    "name": "geode-root-solver",
+    "version-string": "0.1.0",
+    "description": "Header-only Geode power-series root solver with exact GMP / MPFR back-end.",
+    "homepage": "https://github.com/hollowsunhc/Geode-Root-Solver",
+    "dependencies": [
+        "gmp",
+        "mpfr"
+    ]
+}
+  
