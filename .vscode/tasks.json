@@ -1,0 +1,22 @@
+{
+    // .vscode/tasks.json
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "vcpkg: install (msvc-x64-windows)",
+        "type": "process",
+        "command": "${env:VCPKG_ROOT}/vcpkg.exe",
+        "args": [
+          "install",
+          "--triplet", "x64-windows",
+          "--clean-after-build"
+        ],
+        "options": {
+          "cwd": "${workspaceFolder}"
+        },
+        "problemMatcher": [],
+        "group": { "kind": "build", "isDefault": true }
+      },
+    ]
+  }
+  

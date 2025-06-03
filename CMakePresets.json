@@ -1,0 +1,110 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+      "major": 3,
+      "minor": 23
+    },
+  
+    "configurePresets": [
+        {
+            "name": "windows-base",
+            "hidden": true,
+            "generator": "Ninja Multi-Config",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "msvc-vcpkg-debug",
+            "displayName": "MSVC 2022 + vcpkg (Debug)",
+            "inherits": "windows-base",
+            "binaryDir": "${sourceDir}/out/build/msvc-vcpkg",
+            "installDir": "${sourceDir}/out/install/msvc-vcpkg",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "toolchainFile": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+            "environment": {
+                "VCPKG_FEATURE_FLAGS": "manifests"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "msvc-vcpkg-release",
+            "displayName": "MSVC 2022 + vcpkg (Release)",
+            "inherits": "windows-base",
+            "binaryDir": "${sourceDir}/out/build/msvc-vcpkg",
+            "installDir": "${sourceDir}/out/install/msvc-vcpkg",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "toolchainFile": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+            "environment": {
+                "VCPKG_FEATURE_FLAGS": "manifests"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "linux-debug",
+            "displayName": "Linux Debug",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/debug",
+            "installDir": "${sourceDir}/out/build/debug/install",
+            "toolchainFile": "${env:VCPKG_ROOT}/tools/vcpkg/scripts/buildsystems/vcpkg.cmake",
+            "environment": {
+                "VCPKG_FEATURE_FLAGS": "manifests"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "linux-release",
+            "displayName": "Linux Release",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build",
+            "installDir": "${sourceDir}/out/build/install",
+            "toolchainFile": "${env:VCPKG_ROOT}/tools/vcpkg/scripts/buildsystems/vcpkg.cmake",
+            "environment": {
+                "VCPKG_FEATURE_FLAGS": "manifests"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        }
+    ],
+  
+    "buildPresets": [
+        {
+            "name":  "build-msvc-vcpkg-debug",
+            "displayName": "Debug",
+            "configurePreset": "msvc-vcpkg-debug",
+            "configuration":    "Debug"
+        },
+        {
+            "name":  "build-msvc-vcpkg-release",
+            "displayName": "Release",
+            "configurePreset": "msvc-vcpkg-release",
+            "configuration":    "Release"
+        }
+    ]
+  }
+  

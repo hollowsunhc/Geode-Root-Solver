@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "Run demo",
+        "type": "cppvsdbg",
+        "request": "launch",
+        "program": "${workspaceFolder}/out/build/msvc-vcpkg/${command:cmake.buildType}/demo.exe",
+        "args": [],
+        "stopAtEntry": false,
+        "cwd": "${workspaceFolder}",
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+      }
+    ]
+  }
+  
