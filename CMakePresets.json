@@ -1,110 +1,143 @@
 {
     "version": 3,
     "cmakeMinimumRequired": {
-      "major": 3,
-      "minor": 23
+        "major": 3,
+        "minor": 23,
+        "patch": 0
     },
-  
     "configurePresets": [
         {
-            "name": "windows-base",
+            "name": "base",
             "hidden": true,
-            "generator": "Ninja Multi-Config",
-            "condition": {
-                "type": "equals",
-                "lhs": "${hostSystemName}",
-                "rhs": "Windows"
-            }
-        },
-        {
-            "name": "msvc-vcpkg-debug",
-            "displayName": "MSVC 2022 + vcpkg (Debug)",
-            "inherits": "windows-base",
-            "binaryDir": "${sourceDir}/out/build/msvc-vcpkg",
-            "installDir": "${sourceDir}/out/install/msvc-vcpkg",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "toolchainFile": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-            "environment": {
-                "VCPKG_FEATURE_FLAGS": "manifests"
-            },
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "msvc-vcpkg-release",
-            "displayName": "MSVC 2022 + vcpkg (Release)",
-            "inherits": "windows-base",
-            "binaryDir": "${sourceDir}/out/build/msvc-vcpkg",
-            "installDir": "${sourceDir}/out/install/msvc-vcpkg",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "toolchainFile": "${env:VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-            "environment": {
-                "VCPKG_FEATURE_FLAGS": "manifests"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true,
+                "BUILD_TESTING": true
             }
         },
         {
             "name": "linux-debug",
             "displayName": "Linux Debug",
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build/debug",
-            "installDir": "${sourceDir}/out/build/debug/install",
-            "toolchainFile": "${env:VCPKG_ROOT}/tools/vcpkg/scripts/buildsystems/vcpkg.cmake",
-            "environment": {
-                "VCPKG_FEATURE_FLAGS": "manifests"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            },
+            "inherits": "base",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Linux"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
             "name": "linux-release",
             "displayName": "Linux Release",
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/out/build",
-            "installDir": "${sourceDir}/out/build/install",
-            "toolchainFile": "${env:VCPKG_ROOT}/tools/vcpkg/scripts/buildsystems/vcpkg.cmake",
-            "environment": {
-                "VCPKG_FEATURE_FLAGS": "manifests"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
-            },
+            "inherits": "base",
             "condition": {
                 "type": "equals",
                 "lhs": "${hostSystemName}",
                 "rhs": "Linux"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "msvc-vcpkg-debug",
+            "displayName": "Windows Debug",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "cl"
+            },
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            }
+        },
+        {
+            "name": "msvc-vcpkg-release",
+            "displayName": "Windows Release",
+            "inherits": "base",
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_CXX_COMPILER": "cl"
+            },
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
             }
         }
     ],
-  
     "buildPresets": [
         {
-            "name":  "build-msvc-vcpkg-debug",
-            "displayName": "Debug",
-            "configurePreset": "msvc-vcpkg-debug",
-            "configuration":    "Debug"
+            "name": "linux-debug",
+            "configurePreset": "linux-debug"
         },
         {
-            "name":  "build-msvc-vcpkg-release",
-            "displayName": "Release",
+            "name": "linux-release",
+            "configurePreset": "linux-release"
+        },
+        {
+            "name": "msvc-vcpkg-debug",
+            "configurePreset": "msvc-vcpkg-debug"
+        },
+        {
+            "name": "msvc-vcpkg-release",
+            "configurePreset": "msvc-vcpkg-release"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "linux-debug",
+            "configurePreset": "linux-debug",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error"
+            }
+        },
+        {
+            "name": "linux-release",
+            "configurePreset": "linux-release",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error"
+            }
+        },
+        {
+            "name": "msvc-vcpkg-debug",
+            "configurePreset": "msvc-vcpkg-debug",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error"
+            }
+        },
+        {
+            "name": "msvc-vcpkg-release",
             "configurePreset": "msvc-vcpkg-release",
-            "configuration":    "Release"
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error"
+            }
         }
     ]
-  }
-  
+}

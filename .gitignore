@@ -1,2 +1,4 @@
-out
-vcpkg_installed
+/out/
+/build/
+/vcpkg_installed/
+CMakeUserPresets.json

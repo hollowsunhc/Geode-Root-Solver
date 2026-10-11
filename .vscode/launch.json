@@ -1,17 +1,23 @@
 {
     "version": "0.2.0",
     "configurations": [
-      {
-        "name": "Run demo",
-        "type": "cppvsdbg",
-        "request": "launch",
-        "program": "${workspaceFolder}/out/build/msvc-vcpkg/${command:cmake.buildType}/demo.exe",
-        "args": [],
-        "stopAtEntry": false,
-        "cwd": "${workspaceFolder}",
-        "console": "integratedTerminal",
-        "internalConsoleOptions": "neverOpen",
-      }
+        {
+            "name": "Debug demo (Windows)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build",
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Debug demo (Linux)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${command:cmake.launchTargetPath}",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build",
+            "MIMode": "gdb"
+        }
     ]
-  }
-  
+}

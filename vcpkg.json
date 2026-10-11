@@ -1,12 +1,10 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
     "name": "geode-root-solver",
-    "version-string": "0.1.0",
-    "description": "Header-only Geode power-series root solver with exact GMP / MPFR back-end.",
+    "version": "0.2.0",
+    "description": "Header-only real polynomial root solver with Geode refinement and exact root isolation.",
     "homepage": "https://github.com/hollowsunhc/Geode-Root-Solver",
-    "dependencies": [
-        "gmp",
-        "mpfr"
-    ]
+    "license": "Apache-2.0",
+    "builtin-baseline": "e456309491fd875487bf02b8a0dca76c1b1b00cc",
+    "dependencies": ["gmp", "mpfr"]
 }
-  
