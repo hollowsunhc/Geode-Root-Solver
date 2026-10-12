@@ -204,6 +204,7 @@
         <h2 id="catalan-heading">Why Catalan<br> numbers appear.</h2>
         <p>The coefficient <var>C</var><sub>m</sub> begins as a count. Start with triangles, allow more kinds of pieces, then read the same counting rule as a root equation.</p>
         <a href="#series-panel">Back to the worked formula <span aria-hidden="true">↑</span></a>
+        <a href="#quadratic-story">Explore with a quadratic <span aria-hidden="true">↓</span></a>
       </div>
       <div class="catalan-story">
         <article>
@@ -270,6 +271,77 @@
             <p><var>S</var> and <var>G</var> have different coefficient arrays. The worked formula shows the hyper-Catalan coefficients of <var>S</var>; the numerical solver also uses checked Geode refinement. <a href="https://arxiv.org/html/2507.09405v2#S2" target="_blank" rel="noopener noreferrer">Gessel’s Geode identity</a> explains the connection.</p>
           </details>
         </article>
+      </div>
+    </section>
+
+    <section id="quadratic-story" class="learning-section" aria-labelledby="quadratic-heading">
+      <div class="learning-intro">
+        <p class="eyebrow">TRY THE IDEA</p>
+        <h2 id="quadratic-heading">The quadratic formula,<br> seen another way.</h2>
+        <p>Keep one equation, <span class="math">tx² − x + 1 = 0</span>, and follow what happens to its roots and their series.</p>
+        <ol class="quadratic-guide">
+          <li><h3>An exact fraction</h3><p>Start at <span class="math">t = 2/9</span>. The smaller root is exactly <span class="math">3/2</span>. Add terms: infinitely many nonzero contributions can sum to a rational number.</p></li>
+          <li><h3>The other root</h3><p>Select the larger root. It is <span class="math">3</span> in this example. The same series reaches it after changing the center and reversing the scale.</p></li>
+          <li><h3>Where they meet</h3><p>Move <var>t</var> toward <span class="math">1/4</span>. The two roots approach each other. Keep the number of terms fixed and compare the remainder bound.</p></li>
+        </ol>
+        <a href="https://arxiv.org/pdf/1609.05988#page=5" target="_blank" rel="noopener noreferrer">Read Gessel’s Catalan example <span aria-hidden="true">↗</span></a>
+      </div>
+      <div class="quadratic-demo">
+        <h3>Two exact descriptions of the smaller root</h3>
+        <div class="math-scroll" tabindex="0" role="group" aria-label="The Catalan series equals the smaller quadratic root">
+          <math display="block"><mrow><mi>C</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow><mo>=</mo><mfrac><mrow><mn>1</mn><mo>−</mo><msqrt><mn>1</mn><mo>−</mo><mn>4</mn><mi>t</mi></msqrt></mrow><mrow><mn>2</mn><mi>t</mi></mrow></mfrac></math>
+          <math display="block"><mo>=</mo><mn>1</mn><mo>+</mo><mi>t</mi><mo>+</mo><mn>2</mn><msup><mi>t</mi><mn>2</mn></msup><mo>+</mo><mn>5</mn><msup><mi>t</mi><mn>3</mn></msup><mo>+</mo><mo>⋯</mo></math>
+        </div>
+        <p class="series-note">Here <span class="math">1/8 ≤ t ≤ 1/4</span>, and the infinite series converges throughout this interval, including the endpoint.</p>
+        <fieldset id="quadratic-controls" class="quadratic-controls" disabled>
+          <legend class="sr-only">Explore the quadratic and its partial sums</legend>
+          <div class="order-label"><label for="quadratic-parameter">Parameter <var>t</var></label><output id="quadratic-parameter-label" for="quadratic-parameter">2/9</output></div>
+          <input id="quadratic-parameter" type="range" min="450" max="900" step="1" value="800" aria-describedby="quadratic-parameter-help">
+          <p id="quadratic-parameter-help" class="series-note">Slide from <span class="math">t = 1/8</span> to <span class="math">t = 1/4</span>, where the roots meet.</p>
+          <div class="quadratic-root-control"><label for="quadratic-root">Follow a root</label><select id="quadratic-root"><option value="lower">Smaller root</option><option value="upper">Larger root</option></select></div>
+          <div class="order-label"><label for="quadratic-terms">Terms included</label><output id="quadratic-terms-label" for="quadratic-terms">9 terms · N = 8</output></div>
+          <input id="quadratic-terms" type="range" min="1" max="81" step="1" value="9" aria-describedby="quadratic-terms-help">
+          <p id="quadratic-terms-help" class="series-note">Include orders 0 through <var>N</var>. The first term is 1; the remaining terms are <span class="math">C<sub>n</sub>t<sup>n</sup></span>.</p>
+          <button id="quadratic-reset" type="button">Reset to the rational example</button>
+        </fieldset>
+        <svg id="quadratic-plot" viewBox="0 0 640 224" role="img" aria-label="A quadratic with two roots and the selected series approximation">
+          <defs><clipPath id="quadratic-clip"><rect width="576" height="180"/></clipPath></defs>
+          <path class="lesson-axis" d="M32 18V198M32 118H608M176 113V123M320 113V123M464 113V123M608 113V123"/>
+          <g class="quadratic-ticks"><text x="32" y="166">0</text><text x="176" y="166">2</text><text x="320" y="166">4</text><text x="464" y="166">6</text><text x="608" y="166">8</text><text x="625" y="123">x</text></g>
+          <g transform="translate(32 18)"><path id="quadratic-curve" class="lesson-path" clip-path="url(#quadratic-clip)"/></g>
+          <circle id="quadratic-lower-marker" class="root-marker" cx="140" cy="118" r="6"/>
+          <circle id="quadratic-upper-marker" class="root-marker" cx="248" cy="118" r="6"/>
+          <path id="quadratic-partial-marker" d="M0 -6L6 0L0 6L-6 0Z" transform="translate(138 137)"/>
+        </svg>
+        <p class="quadratic-legend"><span><span class="root-swatch" aria-hidden="true"></span> Root positions</span><span><span class="quadratic-swatch" aria-hidden="true">◆</span> Partial sum</span><span>Curve: <span class="math">tx² − x + 1</span></span></p>
+        <p id="quadratic-state" class="quadratic-state" aria-live="polite">At <span class="math">t = 2/9</span>, the roots are <span class="math">3/2</span> and <span class="math">3</span>.</p>
+        <div class="quadratic-values" aria-live="polite" aria-atomic="true">
+          <div><span>Root from the radical ≈</span><output id="quadratic-target">—</output></div>
+          <div><span>Partial sum <var>R</var><sub>N</sub> ≈</span><output id="quadratic-partial">—</output></div>
+          <div><span>Tail bound before rounding ≈</span><output id="quadratic-tail">—</output></div>
+        </div>
+        <p id="quadratic-exact" class="series-note">The rational root also has an infinite series representation.</p>
+        <div class="quadratic-normalization">
+          <h3>Use the same sum for either root</h3>
+          <div class="math-scroll" tabindex="0" role="group" aria-label="A partial sum mapped to the selected root">
+            <math display="block"><msub><mi>S</mi><mi>N</mi></msub><mo>=</mo><munderover><mo>∑</mo><mrow><mi>n</mi><mo>=</mo><mn>0</mn></mrow><mi>N</mi></munderover><msub><mi>C</mi><mi>n</mi></msub><msup><mi>t</mi><mi>n</mi></msup></math>
+            <math display="block"><msub><mi>R</mi><mi>N</mi></msub><mo>=</mo><mi>a</mi><mo>+</mo><mi mathvariant="normal">δ</mi><msub><mi>S</mi><mi>N</mi></msub></math>
+          </div>
+          <dl class="parameter-preview"><div><dt>Center <var>a</var> ≈</dt><dd id="quadratic-center">0</dd></div><div><dt>Scale <var>δ</var></dt><dd id="quadratic-scale">1</dd></div></dl>
+          <p id="quadratic-normalization" class="series-note">For the smaller root, <span class="math">a = 0</span> and <span class="math">δ = 1</span>. For the larger root, <span class="math">a = 1/t</span> and <span class="math">δ = −1</span>.</p>
+          <p id="quadratic-sum" class="worked-line"></p>
+          <p id="quadratic-substitution" class="worked-line"></p>
+        </div>
+        <details id="quadratic-bound-details" class="series-details">
+          <summary>What the remainder bound measures</summary>
+          <p>For <span class="math">0 &lt; t ≤ 1/4</span>, the omitted positive terms obey:</p>
+          <div class="math-scroll" tabindex="0" role="group" aria-label="Bound on the omitted Catalan terms">
+            <math display="block"><mn>0</mn><mo>&lt;</mo><mrow><mi>C</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow><mo>−</mo><msub><mi>S</mi><mi>N</mi></msub><mo>≤</mo><mn>4</mn><mi>t</mi><mrow><mo>(</mo><mn>2</mn><mi>N</mi><mo>+</mo><mn>1</mn><mo>)</mo></mrow><msub><mi>C</mi><mi>N</mi></msub><msup><mi>t</mi><mi>N</mi></msup></math>
+          </div>
+          <p>At <span class="math">t = 1/4</span>, the tail is exactly <span class="math">(2N + 1)C<sub>N</sub>/4<sup>N</sup></span>. For smaller <var>t</var>, each omitted term is at most <span class="math">(4t)<sup>N+1</sup></span> times its value at <span class="math">t = 1/4</span>, giving the bound above. Reflection changes the side of the error, but not its size.</p>
+          <p>This bounds the omitted terms of the exact sum. The displayed bound is rounded and excludes arithmetic and display rounding. This teaching demo uses browser floating-point arithmetic; the main polynomial solver supplies certified error bounds.</p>
+        </details>
+        <p class="series-note quadratic-rounding">Illustrative values use rounded browser arithmetic. The remainder bound concerns omitted terms, before rounding.</p>
       </div>
     </section>
 

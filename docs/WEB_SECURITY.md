@@ -22,6 +22,7 @@ and WebAssembly module; it does not send coefficients to a server.
 | Analytical expansion | Orders 0 through 8 per root; 7 precision levels, at most 2 center checks each |
 | Worked products | At most 12 per order; factorial arguments at most 128 |
 | Exact series fraction | At most 4,096 printed characters |
+| Quadratic illustration | 1–81 terms; `1/8 ≤ t ≤ 1/4`; 577 curve samples |
 
 The page and worker use the same request validator. The C++ entry point independently
 checks the numeric grammar and bounds before constructing exact rational values. The page
@@ -42,6 +43,12 @@ it does not generate an unbounded list and then truncate it. Full grouped
 coefficients use polynomial convolution independently of this display cap.
 Identified exact roots follow the same workload limits and retain an expansion;
 linear equations show zero higher-order terms without artificial work.
+
+The quadratic teaching illustration uses bounded floating-point arithmetic on
+the main thread, independently of the solver. Its numerical helper rejects
+nonfinite parameters, out-of-range coefficients, and nonintegral or excessive
+term counts before summing. Its tail bound covers omitted series terms before
+rounding; the displayed values are not certified solver results.
 
 Cancel, a superseding request, timeout, successful completion, and worker errors
 all terminate the worker. This releases its Wasm instance and prevents a stalled
@@ -81,6 +88,8 @@ quotients, zero and exact roots, and a quartic order with 45 products, confirmin
 that displaying only 12 does not truncate the calculated coefficient.
 Graph tests exercise large and degenerate axis ranges so floating-point rounding
 cannot turn tick generation into an unbounded loop. `npm audit` checks development dependencies.
+Quadratic lesson tests cover both roots, the convergent double-root endpoint,
+remainder bounds, invalid work requests, keyboard controls, and mobile layout.
 Passing these checks is evidence for the tested controls, not a promise that every
 possible security flaw has been eliminated.
 

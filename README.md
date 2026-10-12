@@ -33,6 +33,12 @@ the higher-order terms vanish. The infinite series represents the root exactly; 
 partial sum is an approximation. The analytical series section below describes
 the convergence certificate and its limits.
 
+The [quadratic story](https://hollowsunhc.github.io/Geode-Root-Solver/#quadratic-story)
+connects the quadratic formula to Catalan sums: add terms toward an exact rational
+root, change the center and scale to reach the other root, and bring both roots
+together. This bounded teaching illustration uses ordinary browser arithmetic;
+its displayed remainder bound covers omitted terms before rounding.
+
 The lab includes examples of crossings, repeated roots, absent real roots, and
 nearby roots, with explanations of precision and error bounds. Browser calculations
 are limited to degree 16, 512 working bits, five seconds, and 128 MiB of Wasm linear

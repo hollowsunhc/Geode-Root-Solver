@@ -239,6 +239,32 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 .polygon-cut { fill: none; stroke: var(--ink); stroke-width: 1.5; }
 .polygon-roof { fill: none; stroke: var(--ink); stroke-width: 4; }
 .polygon-example figcaption { margin-top: 14px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.quadratic-guide { padding-left: 20px; margin: 25px 0 0; }
+.quadratic-guide li { margin-top: 21px; padding-left: 5px; }
+.quadratic-guide li::marker { color: var(--coral); font: 12px var(--mono); }
+.quadratic-guide h3 { font-size: 14px; font-weight: 600; }
+.quadratic-guide p { margin-top: 7px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.quadratic-demo { min-width: 0; padding: 24px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.quadratic-demo h3 { font-size: 14px; font-weight: 600; }
+.quadratic-controls { min-width: 0; margin: 17px 0 0; padding: 0; border: 0; border-top: 1px solid var(--line); }
+.quadratic-controls input[type="range"] { width: 100%; min-height: 32px; margin: 5px 0; accent-color: var(--blue); }
+.quadratic-root-control { display: grid; gap: 7px; margin-top: 20px; font-size: 12px; }
+.quadratic-root-control select { width: 100%; min-width: 0; min-height: 42px; padding: 8px; border: 1px solid #bac6ed; background: var(--blue-soft); color: var(--blue); }
+#quadratic-reset { margin-top: 17px; padding: 9px 12px; border: 1px solid var(--line); background: var(--paper); font-size: 11px; }
+#quadratic-reset:hover { background: var(--blue-soft); }
+#quadratic-plot { display: block; width: 100%; max-width: 700px; margin: 20px auto 0; }
+.quadratic-ticks { fill: var(--muted); font: 18px var(--mono); text-anchor: middle; }
+#quadratic-partial-marker { fill: var(--ink); }
+.quadratic-legend { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 17px; color: var(--muted); font-size: 10px; }
+.quadratic-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.quadratic-swatch { color: var(--ink); font-size: 12px; }
+.quadratic-state { margin-top: 17px; padding: 13px 15px; border-left: 2px solid var(--coral); background: var(--paper); font-size: 12px; line-height: 1.8; }
+.quadratic-values { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 18px 0 12px; }
+.quadratic-values > div { min-width: 0; padding: 12px; border-radius: 5px; background: var(--blue-soft); color: var(--blue); }
+.quadratic-values span { display: block; font-size: 10px; }
+.quadratic-values output { display: block; margin-top: 5px; font: 15px/1.8 var(--mono); overflow-wrap: anywhere; }
+.quadratic-normalization { margin-top: 23px; padding-top: 21px; border-top: 1px solid var(--line); }
+.quadratic-rounding { margin-top: 18px; }
 .field-notes article { display: grid; grid-template-columns: 24px minmax(0, 1fr) 105px; gap: 17px; border-top: 1px solid var(--line); padding: 19px 0 21px; align-items: start; }
 .lesson-number { color: var(--coral); font: 10px var(--mono); padding-top: 4px; }
 .field-notes h3 { font-size: 14px; font-weight: 600; margin-bottom: 7px; }
@@ -391,6 +417,7 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
   .learning-intro h2 br { display: none; }
   .learning-intro > p:not(.eyebrow) { max-width: none; font-size: 12px; }
   .learning-intro a { margin-top: 14px; }
+  .quadratic-demo { padding: 20px 16px; }
   .field-notes article { grid-template-columns: 20px minmax(0, 1fr); padding: 17px 0; gap: 12px; }
   .field-notes h3 { font-size: 13px; }
   .field-notes p { font-size: 11px; }
