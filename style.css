@@ -150,6 +150,52 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 .root-full summary { width: fit-content; }
 .root-full code { display: block; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 11px 13px; margin-top: 9px; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; white-space: pre-wrap; user-select: all; }
 .result-note { color: var(--muted); margin: 8px 0 0 31px; font-size: 10px; line-height: 1.7; }
+.series-panel { min-width: 0; margin-top: 30px; padding: 25px 28px 28px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+.series-topline { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.series-topline .section-heading h2 { font-size: 19px; }
+.series-selector { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.series-selector label { font-size: 11px; white-space: nowrap; }
+.series-selector select { min-width: 0; max-width: 245px; padding: 8px 10px; border: 1px solid #bac6ed; background: var(--blue-soft); color: var(--blue); font: 12px var(--mono); }
+.series-intro { margin-top: 13px; max-width: 780px; font-size: 13px; line-height: 1.8; color: var(--muted); }
+.series-root-value { margin-top: 16px; color: var(--blue); font: 13px/1.8 var(--mono); overflow-wrap: anywhere; }
+.series-note { font-size: 11px; line-height: 1.8; color: var(--muted); }
+#series-reduction-note { margin-top: 6px; }
+.series-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 42px; margin-top: 23px; padding-top: 23px; border-top: 1px solid var(--line); }
+.series-layout > div { min-width: 0; }
+.series-layout h3 { font-size: 13px; font-weight: 650; }
+.math-scroll { max-width: 100%; overflow-x: auto; scrollbar-width: thin; padding: 3px 2px; }
+.math-scroll math { width: max-content; margin: 15px auto; font-size: 21px; }
+.root-formula math { margin-block: 17px; font-size: 30px; color: var(--blue); }
+.series-definition { margin-top: 18px; }
+.series-details { margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); }
+.series-details summary { width: fit-content; color: var(--ink); }
+.series-details summary:hover { color: var(--blue); }
+.series-details p { margin-top: 12px; line-height: 1.85; }
+.parameter-list { margin: 13px 0 0; }
+.parameter-list dt { margin-top: 13px; font-size: 10px; color: var(--muted); }
+.parameter-list dd { margin: 4px 0 0; }
+.parameter-list code { display: block; padding: 9px 11px; border: 1px solid var(--line); border-radius: 4px; background: var(--paper); color: var(--ink); font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; white-space: pre-wrap; user-select: all; }
+.first-coefficients { display: grid; gap: 11px; margin-top: 13px; color: var(--ink); font-size: 14px; }
+.exact-root { margin-top: 20px; font: 25px/1.8 Georgia, "Times New Roman", serif; color: var(--blue); overflow-wrap: anywhere; }
+.exact-root code { font-size: 20px; }
+.order-label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 19px; font-size: 11px; }
+.order-label output { font: 10px var(--mono); color: var(--muted); text-align: right; }
+#series-order { width: 100%; height: 28px; margin: 8px 0 2px; accent-color: var(--blue); cursor: pointer; }
+.partial-sum { margin-top: 18px; padding: 14px 17px; border-radius: 6px; background: var(--blue-soft); color: var(--blue); }
+.partial-sum > span { display: block; font-size: 10px; }
+.partial-sum > output { display: block; margin-top: 4px; font: 19px/1.7 var(--mono); overflow-wrap: anywhere; }
+.partial-sum > p { margin-top: 5px; font-size: 10px; overflow-wrap: anywhere; }
+.partial-sum > p > span { font-family: var(--mono); }
+.series-table { width: 100%; table-layout: fixed; border-collapse: collapse; margin: 17px 0 10px; font-size: 10px; text-align: left; }
+.series-table caption { text-align: left; color: var(--muted); font-size: 10px; margin-bottom: 7px; }
+.series-table th, .series-table td { border-bottom: 1px solid var(--line); padding: 8px 7px; vertical-align: top; overflow-wrap: anywhere; }
+.series-table th { font-weight: 500; color: var(--muted); }
+.series-table th:first-child { width: 13%; padding-left: 0; }
+.series-table td { font-family: var(--mono); }
+.series-table tbody tr:last-child { color: var(--blue); background: #f2f4fd; }
+.exact-terms { font-size: 11px; }
+.exact-terms td { line-height: 1.85; }
+.exact-terms tbody tr:last-child { color: var(--ink); background: transparent; }
 .example-note { display: flex; align-items: center; gap: 25px; margin: 26px 0 0; padding: 17px 22px; background: #eeebe0; border-radius: 7px; }
 .note-label { flex: 0 0 133px; color: #7b674f; font: 9px var(--mono); letter-spacing: 0.5px; }
 .example-note p { font-size: 12px; color: #5e6458; line-height: 1.7; }
@@ -220,6 +266,9 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
   .result-badge { margin-left: 31px; }
   .results-panel { padding-top: 0; }
   .learning-section { grid-template-columns: 235px minmax(0, 1fr); gap: 30px; }
+  .series-panel { padding: 23px; }
+  .series-layout { gap: 25px; }
+  .series-topline { align-items: start; flex-direction: column; gap: 15px; }
   .field-notes article { grid-template-columns: 21px minmax(0, 1fr); gap: 12px; }
   .lesson-curve, .precision-illustration { display: none; }
   .site-footer, .site-footer nav { gap: 18px; }
@@ -283,6 +332,20 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
   .root-row { grid-template-columns: 25px minmax(0, 1fr); gap: 9px; }
   .root-approx { font-size: 16px; }
   .copy-root { padding: 5px 8px; }
+  .series-panel { margin-top: 26px; padding: 21px 17px; }
+  .series-topline .section-heading h2 { font-size: 17px; }
+  .series-selector { width: 100%; }
+  .series-selector select { flex: 1; max-width: 100%; font-size: 11px; }
+  .series-intro { font-size: 12px; }
+  .series-layout { grid-template-columns: minmax(0, 1fr); gap: 27px; padding-top: 20px; margin-top: 20px; }
+  .series-convergence-pane { border-top: 1px solid var(--line); padding-top: 23px; }
+  .root-formula math { font-size: 27px; }
+  .series-table { font-size: 9px; }
+  .series-table th, .series-table td { padding: 8px 5px; }
+  .series-table th:first-child { width: 14%; }
+  .exact-terms { font-size: 10px; }
+  .parameter-list code { font-size: 11px; }
+  .partial-sum > output { font-size: 16px; }
   .example-note { align-items: start; flex-wrap: wrap; gap: 7px; margin-top: 24px; padding: 17px 19px; }
   .note-label { flex-basis: 100%; font-size: 8px; }
   .example-note p { font-size: 11px; }
