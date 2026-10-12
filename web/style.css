@@ -75,7 +75,7 @@ h1 em { color: var(--blue); font-weight: 400; }
 textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; background: #fbfcf6; color: var(--ink); border: 1px solid #d5ddd2; font: 16px/1.6 var(--mono); }
 .field-help { color: #b9c8b8; font-size: 10px; line-height: 1.65; margin-top: 9px; }
 .input-help { color: #ccd7c6; margin-top: 14px; font-size: 10px; }
-.input-help summary { width: fit-content; text-underline-offset: 3px; }
+.input-help summary { padding: 12px; min-height: 44px; border: 1px solid #748276; border-radius: 6px; background: #344239; list-style-position: inside; font-size: 12px; }
 .input-help summary:hover { color: white; }
 .input-help p { margin-top: 9px; }
 .input-help code { color: white; font-size: 10px; }
@@ -150,7 +150,13 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 .root-full summary { width: fit-content; }
 .root-full code { display: block; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 11px 13px; margin-top: 9px; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; white-space: pre-wrap; user-select: all; }
 .result-note { color: var(--muted); margin: 8px 0 0 31px; font-size: 10px; line-height: 1.7; }
+.formula-link { display: inline-flex; align-items: center; gap: 16px; min-height: 44px; margin: 8px 0 8px 31px; padding: 10px 14px; border: 1px solid var(--blue); border-radius: 6px; background: var(--blue-soft); color: var(--blue); font-size: 12px; font-weight: 600; text-decoration: none; }
+.formula-link:hover { text-decoration: underline; }
 .series-panel { min-width: 0; margin-top: 30px; padding: 25px 28px 28px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+#series-heading { scroll-margin-top: 24px; }
+.series-start-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin-top: 18px; }
+.series-start-actions .solve-button { flex: 0 1 auto; gap: 22px; }
+.series-start-actions a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: var(--blue); font-size: 12px; }
 .series-topline { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .series-topline .section-heading h2 { font-size: 19px; }
 .series-selector { display: flex; align-items: center; gap: 10px; min-width: 0; }
@@ -185,9 +191,9 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 .math-scroll math { width: max-content; min-width: 100%; margin: 15px 0; font-size: 21px; white-space: nowrap; }
 .root-formula math { margin-block: 17px; font-size: 30px; color: var(--blue); }
 .series-definition { margin-top: 18px; }
-.series-details { margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); }
-.series-details summary { width: fit-content; color: var(--ink); }
-.series-details summary:hover { color: var(--blue); }
+.series-details { margin-top: 15px; font-size: 11px; color: var(--muted); }
+.series-details summary { min-height: 44px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; background: var(--blue-soft); color: var(--blue); list-style-position: inside; font-size: 12px; font-weight: 600; }
+.series-details summary:hover, .series-details[open] > summary { border-color: var(--blue); }
 .series-details p { margin-top: 12px; line-height: 1.85; }
 .parameter-list { margin: 13px 0 0; }
 .parameter-list dt { margin-top: 13px; font-size: 10px; color: var(--muted); }
@@ -229,8 +235,6 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 .catalan-story h3 { font-size: 17px; font-weight: 600; }
 .catalan-story p { margin-top: 13px; font-size: 13px; line-height: 1.85; }
 .catalan-story a, .series-note a { color: var(--blue); }
-.catalan-story .series-details { padding-top: 15px; }
-.catalan-story .series-details summary { font-size: 12px; }
 .catalan-story .series-details p { font-size: 12px; }
 .polygon-example { margin: 22px 0; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; }
 .polygon-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
@@ -421,7 +425,7 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
   .results-panel { padding: 8px 0 0; }
   .results-topline { flex-direction: row; align-items: center; gap: 8px; }
   .result-badge { margin: 0; font-size: 7px; max-width: 120px; text-align: right; }
-  .result-summary, .root-list, .result-note { margin-left: 0; }
+  .result-summary, .root-list, .result-note, .formula-link { margin-left: 0; }
   .result-summary { margin-top: 13px; }
   .root-row { grid-template-columns: 25px minmax(0, 1fr); gap: 9px; }
   .root-approx { font-size: 16px; }

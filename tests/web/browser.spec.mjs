@@ -31,6 +31,8 @@ test('a visitor can select a root, inspect its series, and invalidate stale resu
   expect((await page.locator('.root-full code').allTextContents()).map(Number)).toEqual([-2, 1, 3]);
   await expect(page.locator('#series-root option')).toHaveCount(3);
   await expect(page.locator('#series-expansion')).toBeVisible();
+  await page.getByRole('link', { name: 'See the worked formula' }).click();
+  await expect(page.locator('#series-heading')).toBeFocused();
   await page.locator('#series-root').selectOption('1');
   await expect(page.locator('#series-root-index')).toHaveText('2');
   const selectedPreview = (await page.locator('#series-root-value').textContent()).split('≈ ')[1].replace('…', '');
@@ -49,6 +51,7 @@ test('a visitor can select a root, inspect its series, and invalidate stale resu
   await page.locator('#coefficients').fill('-2, 0, 1');
   await expect(page.locator('.root-row')).toHaveCount(0);
   await expect(page.locator('#series-content')).toBeHidden();
+  await expect(page.getByRole('link', { name: 'See the worked formula' })).toBeHidden();
   await expect(page.locator('#series-root option')).toHaveCount(0);
   await expect(page.locator('#series-steps tr')).toHaveCount(0);
   await expect(page.locator('#series-product option')).toHaveCount(0);
@@ -57,6 +60,52 @@ test('a visitor can select a root, inspect its series, and invalidate stale resu
   await expect(page.locator('.root-row')).toHaveCount(2);
   expect((await page.locator('.root-full code').allTextContents()).map(Number)[1]).toBeCloseTo(Math.SQRT2, 12);
   expect(errors).toEqual([]);
+});
+
+test('a reader can start the worked formula where it is explained and correct invalid input', async ({ page }) => {
+  await page.goto('./#series-panel');
+  const start = page.getByRole('button', { name: 'Show the worked formula' });
+  await start.focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('.root-row')).toHaveCount(3);
+  await expect(page.locator('#series-heading')).toBeFocused();
+  await expect(page.locator('#series-expansion')).toBeVisible();
+  await expect(start).toBeHidden();
+
+  await page.locator('#coefficients').fill('1,,2');
+  await start.click();
+  await expect(page.locator('#coefficients')).toBeFocused();
+  await expect(page.locator('#form-error')).toBeVisible();
+  await expect(start).toBeEnabled();
+
+  await page.locator('[data-example="no-real"]').click();
+  await start.click();
+  await expect(page.locator('#series-heading')).toBeFocused();
+  await expect(page.locator('#series-empty')).toContainText('No real roots');
+  await expect(start).toBeHidden();
+  await expect(page.getByRole('link', { name: 'See the worked formula' })).toBeHidden();
+  await page.locator('[data-example="crossings"]').click();
+  await expect(start).toBeVisible();
+});
+
+test('starting a formula disables both solve controls and makes loading errors reachable', async ({ page }) => {
+  let release;
+  const held = new Promise(resolve => { release = resolve; });
+  await page.route('**/solver.worker.js', async route => {
+    await held;
+    await route.abort();
+  }, { times: 1 });
+  await page.goto('./#series-panel');
+  await page.getByRole('button', { name: 'Show the worked formula' }).click();
+  await expect(page.locator('#solve-button')).toBeDisabled();
+  await expect(page.locator('#series-start')).toBeDisabled();
+  release();
+  await expect(page.locator('#form-error')).toBeFocused();
+  await expect(page.locator('#solve-button')).toBeEnabled();
+  await expect(page.locator('#series-start')).toBeEnabled();
+  await page.getByRole('button', { name: 'Show the worked formula' }).click();
+  await expect(page.locator('#series-expansion')).toBeVisible();
+  await expect(page.locator('#series-heading')).toBeFocused();
 });
 
 test('the cubic guide evaluates the mixed coefficient and substitutes the selected root', async ({ page }) => {

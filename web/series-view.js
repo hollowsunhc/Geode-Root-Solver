@@ -80,7 +80,8 @@ export class SeriesView {
     this.#node('series-content').hidden = true;
     this.#node('series-selector').hidden = true;
     this.#node('series-empty').hidden = false;
-    this.#node('series-empty').textContent = 'Solve a polynomial to inspect each root’s formula and its convergence.';
+    this.#node('series-empty').textContent = 'Start with the polynomial above. Find its roots, then follow the formula one step at a time.';
+    this.#node('series-start-actions').hidden = false;
     this.#clearExpansion();
     this.#node('series-root').replaceChildren();
     this.#node('series-order').value = '3';
@@ -92,6 +93,7 @@ export class SeriesView {
   show(result) {
     this.clear();
     this.#result = result;
+    this.#node('series-start-actions').hidden = true;
     if (!result.roots.length) {
       this.#node('series-empty').textContent = 'No real roots: there is no real-root expansion to inspect for this polynomial.';
       return;
