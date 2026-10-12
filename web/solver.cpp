@@ -3,6 +3,7 @@
  * @brief Bounded C interface for the browser's isolated WebAssembly solver.
  */
 #include "geode_root_solver.hpp"
+#include "series.hpp"
 
 #include <cstddef>
 #include <new>
@@ -25,7 +26,7 @@ bool digit(char c) {
     return c >= '0' && c <= '9';
 }
 
-/// @brief Validate a bounded decimal before handing it to MPFR.
+/// @brief Validate a bounded decimal before allocating exact integers.
 void check_decimal(const std::string& token) {
     if (token.empty() || token.size() > max_token)
         throw std::invalid_argument("Use at most 64 characters per coefficient.");
@@ -109,6 +110,44 @@ std::vector<std::string> parse(const char* text) {
     return tokens;
 }
 
+/**
+ * @brief Convert validated finite decimal text to an exact rational.
+ * @param token Decimal token already checked by check_decimal().
+ * @return The entered decimal value, without binary coefficient rounding.
+ */
+geode::mpq decimal_rational(const std::string& token) {
+    const auto exponent_at = token.find_first_of("eE");
+    const std::string mantissa = token.substr(0, exponent_at);
+    int exponent = 0;
+    if (exponent_at != std::string::npos) {
+        std::size_t i = exponent_at + 1;
+        const bool negative = token[i] == '-';
+        if (token[i] == '+' || token[i] == '-')
+            ++i;
+        for (; i < token.size(); ++i)
+            exponent = 10 * exponent + (token[i] - '0');
+        if (negative)
+            exponent = -exponent;
+    }
+    const auto point = mantissa.find('.');
+    if (point != std::string::npos)
+        exponent -= static_cast<int>(mantissa.size() - point - 1);
+    std::string digits;
+    for (char c : mantissa)
+        if (digit(c))
+            digits += c;
+    mpz_class numerator(digits, 10);
+    if (mantissa.front() == '-')
+        numerator = -numerator;
+    mpz_class power;
+    mpz_ui_pow_ui(power.get_mpz_t(), 10,
+                  static_cast<unsigned long>(exponent < 0 ? -exponent : exponent));
+    geode::mpq result =
+        exponent >= 0 ? geode::mpq(numerator * power) : geode::mpq(numerator, power);
+    result.canonicalize();
+    return result;
+}
+
 /// @brief Quote an exception message for a JSON string without reflecting raw input.
 std::string quote(const std::string& value) {
     std::string result = "\"";
@@ -153,6 +192,37 @@ std::string exact_decimal(const geode::HighPrecFloat& value) {
         decimal.insert(1, ".");
     return (negative ? "-" : "") + decimal + "e" + std::to_string(decimal_exponent);
 }
+
+/// @brief Encode a bounded root formula and its exact terms for the browser.
+std::string series_json(const geode::browser::RootSeries& report) {
+    std::string result = "{\"kind\":" + quote(report.kind) +
+                         ",\"reducedDegree\":" + std::to_string(report.reduced_degree);
+    if (report.kind == "exact") {
+        return result + ",\"value\":" + quote(report.value.get_str()) + '}';
+    }
+    if (report.kind == "unavailable") {
+        return result + ",\"reason\":" + quote(report.reason) + '}';
+    }
+    result += ",\"center\":" + quote(report.center.get_str()) +
+              ",\"scale\":" + quote(report.scale.get_str()) +
+              ",\"radius\":" + quote(report.radius.get_str()) + ",\"parameters\":[";
+    for (std::size_t i = 0; i < report.parameters.size(); ++i) {
+        if (i != 0)
+            result += ',';
+        result += quote(report.parameters[i].get_str());
+    }
+    result += "],\"steps\":[";
+    for (const auto& step : report.steps) {
+        if (step.order != 0)
+            result += ',';
+        result += "{\"order\":" + std::to_string(step.order) +
+                  ",\"coefficient\":" + quote(step.coefficient.get_str()) +
+                  ",\"term\":" + quote(step.term.get_str()) +
+                  ",\"sum\":" + quote(exact_decimal(step.sum)) +
+                  ",\"bound\":" + quote(exact_decimal(step.bound)) + '}';
+    }
+    return result + "]}";
+}
 } // namespace
 
 /**
@@ -160,8 +230,8 @@ std::string exact_decimal(const geode::HighPrecFloat& value) {
  * @param coefficients Ascending decimal coefficients, separated by commas or whitespace.
  * @param bits Working precision: 128, 256, or 512 bits.
  * @param digits Absolute error exponent: 1..30, 1..60, or 1..120 respectively.
- * @return JSON with exact decimal encodings of the computed binary approximations
- *         and request metadata, or an error string.
+ * @return JSON with exact decimal encodings of the computed binary approximations,
+ *         per-root analytical series, and request metadata, or an error string.
  *         The pointer remains valid until the next call in this Wasm instance.
  * @note Run in a disposable worker with a host-side deadline. The memory ceiling
  *       is enforced by the link settings; this synchronous function cannot cancel itself.
@@ -174,11 +244,11 @@ extern "C" const char* geode_solve(const char* coefficients, int bits, int digit
             throw std::invalid_argument("Choose a supported precision and error bound.");
         const auto tokens = parse(coefficients);
         geode::set_global_bits(static_cast<unsigned>(bits));
-        std::vector<geode::HighPrecFloat> values;
+        std::vector<geode::mpq> values;
         values.reserve(tokens.size());
         for (const auto& token : tokens)
-            values.emplace_back(token);
-        const geode::Polynomial<geode::HighPrecFloat> polynomial(std::move(values));
+            values.push_back(decimal_rational(token));
+        const geode::Polynomial<geode::mpq> polynomial(std::move(values));
         const geode::RootSolver<> solver(polynomial);
         geode::HighPrecFloat tolerance;
         // Round down so the actual tolerance never exceeds the requested decimal bound.
@@ -190,6 +260,17 @@ extern "C" const char* geode_solve(const char* coefficients, int bits, int digit
             if (i != 0)
                 response += ',';
             response += quote(exact_decimal(roots[i]));
+        }
+        response += "],\"series\":[";
+        if (!roots.empty()) {
+            auto reduced = polynomial.coeff();
+            const auto sequence = geode::detail::square_free_sequence(reduced);
+            for (std::size_t i = 0; i < roots.size(); ++i) {
+                if (i != 0)
+                    response += ',';
+                response +=
+                    series_json(geode::browser::root_series(reduced, sequence, roots[i], i));
+            }
         }
         response += "],\"degree\":" + std::to_string(polynomial.degree()) +
                     ",\"bits\":" + std::to_string(bits) + ",\"digits\":" + std::to_string(digits) +

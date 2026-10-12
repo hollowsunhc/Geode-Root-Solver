@@ -581,6 +581,26 @@ inline std::vector<RationalPoly> sturm_sequence(const RationalPoly& p) {
     return sequence;
 }
 
+/// @brief Reduce p to its primitive square-free part and return its Sturm sequence.
+/// @pre p is nonempty and its coefficients are canonical rationals.
+/// @return An empty sequence for a constant or linear result.
+inline std::vector<RationalPoly> square_free_sequence(RationalPoly& p) {
+    trim(p);
+    primitive(p);
+    if (p.size() <= 2)
+        return {};
+    auto sequence = sturm_sequence(p);
+    if (sequence.back().size() > 1) {
+        auto remainder = p;
+        p = divide(remainder, sequence.back());
+        primitive(p);
+        if (p.size() <= 2)
+            return {};
+        sequence = sturm_sequence(p);
+    }
+    return sequence;
+}
+
 /// @brief Count sign changes at x, omitting zero members as Sturm's theorem requires.
 inline int variations(const std::vector<RationalPoly>& sequence, const mpq& x) {
     int previous = 0;
@@ -720,7 +740,7 @@ class RootSolver {
                   "RootSolver requires geode::HighPrecFloat.");
 
 public:
-    using PolyF = Polynomial<Float>; ///< Input polynomial type.
+    using PolyF = Polynomial<Float>; ///< MPFR input polynomial type.
     /**
      * @brief Copy the stored binary coefficients as exact rationals.
      * @param polynomial Nonzero polynomial with finite real coefficients.
@@ -730,10 +750,17 @@ public:
     explicit RootSolver(const PolyF& polynomial) {
         for (const auto& coefficient : polynomial.coeff())
             coefficients_.push_back(detail::rational(coefficient));
-        if (coefficients_.size() == 1 && coefficients_[0] == 0) {
-            throw std::invalid_argument("The zero polynomial has infinitely many roots.");
-        }
-        detail::primitive(coefficients_);
+        normalize();
+    }
+
+    /**
+     * @brief Copy exact rational coefficients without rounding to MPFR precision.
+     * @param polynomial Nonzero polynomial; noncanonical rationals are normalized.
+     * @throws std::invalid_argument For a zero polynomial or a zero denominator.
+     * @note Precision affects the returned roots, never the input coefficients.
+     */
+    explicit RootSolver(const Polynomial<mpq>& polynomial) : coefficients_(polynomial.coeff()) {
+        normalize();
     }
 
     /**
@@ -743,7 +770,7 @@ public:
      * @throws std::invalid_argument If tolerance is not finite and positive.
      * @throws std::runtime_error If the current precision cannot meet the error bound
      *         or distinguish two roots. Increase precision and try again.
-     * @note Accuracy applies to the stored coefficients, not their unrounded input text.
+     * @note Accuracy applies to exact rational inputs or the stored binary values of MPFR inputs.
      */
     std::vector<Float> compute_roots(Float tolerance = Float("1e-30")) const {
         if (!tolerance.is_finite() || tolerance <= 0) {
@@ -751,19 +778,11 @@ public:
         }
         const mpq error = detail::rational(tolerance);
         auto p = coefficients_;
+        const auto sequence = detail::square_free_sequence(p);
         if (p.size() == 1)
             return {};
         if (p.size() == 2)
             return {detail::rounded_root(mpq(-p[0] / p[1]), error)};
-        auto sequence = detail::sturm_sequence(p);
-        if (sequence.back().size() > 1) {
-            auto remainder = p;
-            p = detail::divide(remainder, sequence.back());
-            detail::primitive(p);
-            if (p.size() == 2)
-                return {detail::rounded_root(mpq(-p[0] / p[1]), error)};
-            sequence = detail::sturm_sequence(p);
-        }
         mpq bound = 0;
         for (std::size_t i = 0; i + 1 < p.size(); ++i)
             bound = std::max(bound, mpq(abs(p[i] / p.back())));
@@ -808,6 +827,21 @@ public:
     }
 
 private:
+    /// @brief Validate and normalize the copied input before exact polynomial arithmetic.
+    void normalize() {
+        for (auto& coefficient : coefficients_) {
+            if (coefficient.get_den() == 0) {
+                throw std::invalid_argument("A rational denominator must not be zero.");
+            }
+            coefficient.canonicalize();
+        }
+        detail::trim(coefficients_);
+        if (coefficients_.size() == 1 && coefficients_[0] == 0) {
+            throw std::invalid_argument("The zero polynomial has infinitely many roots.");
+        }
+        detail::primitive(coefficients_);
+    }
+
     detail::RationalPoly coefficients_;
 };
 

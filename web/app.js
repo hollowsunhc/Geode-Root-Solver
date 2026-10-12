@@ -2,6 +2,7 @@
 import { LIMITS, verifyRequest } from './policy.js';
 import { SolverClient } from './client.js';
 import { PolynomialPlot, shortRootLabel } from './plot.js';
+import { SeriesView } from './series-view.js';
 
 const examples = {
   crossings: {
@@ -43,6 +44,7 @@ const resultNote = document.querySelector('#result-note');
 const equation = document.querySelector('#equation');
 const client = new SolverClient();
 const plot = new PolynomialPlot(document.querySelector('#plot'));
+const seriesView = new SeriesView(document.querySelector('#series-panel'));
 let selectedExample = 'crossings';
 let revision = 0;
 
@@ -77,13 +79,14 @@ function setBusy(busy) {
 function clearResults() {
   rootList.replaceChildren();
   rootList.hidden = true;
-  resultHeading.textContent = 'Find the meeting points';
+  resultHeading.textContent = 'Real roots';
   resultSummary.textContent = 'Find every distinct real root: the x-values where this polynomial equals zero.';
   resultBadge.textContent = 'READY TO SOLVE';
   resultBadge.classList.remove('is-solved');
   resultNote.hidden = true;
   document.querySelector('#root-legend').lastChild.textContent = ' Roots appear after solving';
   plot.setRoots([]);
+  seriesView.clear();
 }
 
 /** @brief Show the polynomial in descending powers using its original decimal tokens. */
@@ -202,8 +205,9 @@ function showResults(result, resultRevision) {
   }
   rootList.hidden = count === 0;
   resultNote.hidden = false;
-  resultNote.textContent = count ? 'The full MPFR values preserve every printed digit. Extra printed digits are not all certified: the error bound guarantees only the requested absolute accuracy, for the stored binary coefficients.' : 'Geode checks the whole real number line, including regions outside the graph’s current view.';
+  resultNote.textContent = count ? 'These decimal values approximate roots of the exact polynomial you entered. The error bound guarantees the requested absolute accuracy; extra printed digits are not all certified.' : 'Geode checks the whole real number line, including regions outside the graph’s current view.';
   plot.setRoots(result.roots);
+  seriesView.show(result);
   document.querySelector('#root-legend').lastChild.textContent = count ? ' Computed roots · approximate positions' : ' No real roots';
   setStatus(count ? `${count} distinct real ${count === 1 ? 'root' : 'roots'} found. Results are ready.` : 'Complete. No real roots found.', 'complete');
 }
@@ -257,7 +261,7 @@ coefficientInput.addEventListener('input', () => {
     button.classList.remove('is-selected');
     button.setAttribute('aria-pressed', 'false');
   }
-  document.querySelector('#example-explanation').textContent = 'Your own experiment. Look for crossings and touches, then let the solver check the whole real number line—including beyond this graph.';
+  document.querySelector('#example-explanation').textContent = 'Look for crossings and touches. The solver checks the whole real number line, including regions outside the graph.';
   invalidate();
 });
 bitsInput.addEventListener('change', () => {

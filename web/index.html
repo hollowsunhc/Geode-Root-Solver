@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="referrer" content="no-referrer">
-  <meta name="description" content="A small, interactive polynomial lab. Explore a curve, find every distinct real root, and discover the mathematics beneath it with Geode.">
+  <meta name="description" content="Find every distinct real root of a polynomial, inspect its exact analytic formula, and explore how its series converges.">
   <meta name="theme-color" content="#f5f3eb">
   <title>Geode · The polynomial lab</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
@@ -32,23 +32,23 @@
         <p class="eyebrow"><span class="tiny-cross" aria-hidden="true">✳</span> THE POLYNOMIAL LAB</p>
         <h1 id="page-title">Get to the <em>root</em> of it.</h1>
       </div>
-      <p class="intro-copy">A curve to explore. Roots to discover.<br>Big precision. A little mathematical curiosity.</p>
+      <p class="intro-copy">Find real roots, inspect their analytic formulas,<br>and see how the series converge.</p>
     </section>
 
     <section class="example-bar" aria-label="Choose an educational example">
-      <p class="example-label">A place to start <span aria-hidden="true">↘</span></p>
+      <p class="example-label">Try an example <span aria-hidden="true">↘</span></p>
       <div class="examples">
-        <button class="example is-selected" type="button" data-example="crossings" aria-pressed="true"><span class="example-number">01</span><span>Three crossings<small>The classic cubic</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
-        <button class="example" type="button" data-example="repeated" aria-pressed="false"><span class="example-number">02</span><span>Touch &amp; turn<small>A repeated root</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
-        <button class="example" type="button" data-example="no-real" aria-pressed="false"><span class="example-number">03</span><span>Above it all<small>No real roots</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
-        <button class="example" type="button" data-example="nearby" aria-pressed="false"><span class="example-number">04</span><span>A closer look<small>Two nearby roots</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
+        <button class="example is-selected" type="button" data-example="crossings" aria-pressed="true"><span class="example-number">01</span><span>Three real roots<small>A cubic polynomial</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
+        <button class="example" type="button" data-example="repeated" aria-pressed="false"><span class="example-number">02</span><span>A repeated root<small>Touches the axis</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
+        <button class="example" type="button" data-example="no-real" aria-pressed="false"><span class="example-number">03</span><span>No real roots<small>x² + 1</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
+        <button class="example" type="button" data-example="nearby" aria-pressed="false"><span class="example-number">04</span><span>Two nearby roots<small>1/1024 apart</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
       </div>
     </section>
 
     <section id="lab" class="workspace" aria-label="Interactive polynomial lab">
       <form id="solver-form" class="editor-panel" novalidate>
-        <div class="section-heading"><span class="step-number">01 /</span><h2>Make it yours</h2></div>
-        <p class="editor-intro">Start with a polynomial.<br>We’ll find where it equals zero.</p>
+        <div class="section-heading"><span class="step-number">01 /</span><h2>Enter a polynomial</h2></div>
+        <p class="editor-intro">Enter its coefficients to find<br>every distinct real root.</p>
         <label for="coefficients">Coefficients</label>
         <div class="coefficient-order" aria-hidden="true"><span>constant</span><span>x</span><span>x²</span><span>x³ …</span></div>
         <textarea id="coefficients" name="coefficients" rows="2" maxlength="2048" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="coefficient-help form-error">6, -5, -2, 1</textarea>
@@ -56,7 +56,7 @@
         <details class="input-help">
           <summary>A quick guide to coefficients</summary>
           <p>For <span class="math">x³ − 2x² − 5x + 6</span>, enter <code>6, -5, -2, 1</code>. Include a <code>0</code> for any missing power.</p>
-          <p>Use decimal numbers or scientific notation such as <code>1e-6</code>. This lab accepts up to degree 16.</p>
+          <p>Use decimal numbers or scientific notation such as <code>1e-6</code>. Each decimal is exact: <code>0.1</code> means <code>1/10</code>. This lab accepts up to degree 16.</p>
         </details>
 
         <div class="precision-fields">
@@ -66,12 +66,12 @@
         <p id="precision-help" class="field-help">Absolute error at most 10<sup>−30</sup>. Up to 60 digits at 256 bits.</p>
         <p id="form-error" class="form-error" role="alert" hidden></p>
         <div class="solve-actions"><button id="solve-button" class="solve-button" type="submit"><span>Find real roots</span><span aria-hidden="true">↗</span></button><button id="cancel-button" class="cancel-button" type="button" hidden>Cancel</button></div>
-        <p id="solver-status" class="solver-status" role="status" aria-live="polite" aria-atomic="true">Ready when you are.</p>
+        <p id="solver-status" class="solver-status" role="status" aria-live="polite" aria-atomic="true">Ready to solve.</p>
         <div class="local-note"><span class="local-dot" aria-hidden="true"></span> Computed here, in your browser.</div>
       </form>
 
       <section id="plot-panel" class="plot-panel" aria-labelledby="plot-heading">
-        <div class="plot-topline"><div class="section-heading"><span class="step-number">02 /</span><h2 id="plot-heading">Follow the curve</h2></div><span class="approximate-label">APPROXIMATE GRAPH</span></div>
+        <div class="plot-topline"><div class="section-heading"><span class="step-number">02 /</span><h2 id="plot-heading">Polynomial graph</h2></div><span class="approximate-label">APPROXIMATE GRAPH</span></div>
         <div class="equation-toolbar"><div id="equation" class="equation" aria-live="off"><span class="function-name">f(x) = </span>x<sup>3</sup> − 2x<sup>2</sup> − 5x + 6</div><div class="plot-tools" role="group" aria-label="Graph view controls"><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="zoom-out" type="button" aria-label="Zoom out">−</button><button id="reset-view" type="button" aria-label="Reset graph view">Reset <span aria-hidden="true">↺</span></button></div></div>
         <div class="plot-surface">
           <svg id="plot" role="img" tabindex="0" aria-labelledby="plot-title plot-description" aria-describedby="plot-keyboard-help">
@@ -86,34 +86,89 @@
           <p id="plot-message" class="plot-message" hidden></p>
         </div>
         <div class="plot-legend"><span><i class="curve-swatch" aria-hidden="true"></i> Polynomial</span><span id="root-legend"><i class="root-swatch" aria-hidden="true"></i> Roots appear after solving</span><span class="plot-drag-hint">Drag to explore <span aria-hidden="true">↔</span></span></div>
-        <div class="plot-footer"><output id="plot-readout">Hover or tap to inspect the curve</output><span class="graph-caveat">A picture, not a precision check.</span></div>
+        <div class="plot-footer"><output id="plot-readout">Hover or tap to inspect the curve</output><span class="graph-caveat">Uses ordinary floating-point arithmetic.</span></div>
         <p id="plot-keyboard-help" class="sr-only">Focus the graph to navigate. Arrow keys pan. Plus and minus zoom. Zero or Home resets the view. Use the mouse wheel while the graph is focused to zoom.</p>
         <p id="plot-range" class="sr-only" aria-live="polite"></p>
       </section>
 
       <section id="results" class="results-panel" aria-labelledby="result-heading" aria-busy="false">
-        <div class="results-topline"><div class="section-heading"><span class="step-number">03 /</span><h2 id="result-heading">Find the meeting points</h2></div><span id="result-badge" class="result-badge">AWAITING YOUR CURIOSITY</span></div>
+        <div class="results-topline"><div class="section-heading"><span class="step-number">03 /</span><h2 id="result-heading">Real roots</h2></div><span id="result-badge" class="result-badge">READY TO SOLVE</span></div>
         <p id="result-summary" class="result-summary">A root is an x-value where <span class="math">f(x) = 0</span>. Find every distinct real root, even when the curve only touches the axis.</p>
         <ol id="root-list" class="root-list" aria-label="Computed distinct real roots" hidden></ol>
         <p id="result-note" class="result-note" hidden></p>
       </section>
     </section>
 
-    <aside id="example-note" class="example-note" aria-label="What to notice in this example"><span class="note-label">WHAT TO NOTICE</span><p id="example-explanation">A cubic can cross the axis three times. Follow this curve from left to right, then solve to locate each crossing.</p><span class="note-mark" aria-hidden="true">↗</span></aside>
-
-    <section id="how-it-works" class="learning-section" aria-labelledby="learning-heading">
-      <div class="learning-intro"><p class="eyebrow">A LOOK BENEATH THE SURFACE</p><h2 id="learning-heading">The picture is<br> just the beginning.</h2><p>A graph builds intuition. The mathematics makes sure no real root gets left behind.</p><a href="https://github.com/hollowsunhc/Geode-Root-Solver#mathematics-and-performance" target="_blank" rel="noopener noreferrer">Explore the mathematics <span aria-hidden="true">↗</span></a></div>
-      <div class="field-notes">
-        <article><span class="lesson-number">01</span><div><h3>A root can cross. Or just touch.</h3><p>At a real root, the polynomial is zero. Some roots cross the horizontal axis; others turn around there. Repeated roots appear once in the results.</p></div><svg class="lesson-curve" viewBox="0 0 112 62" role="img" aria-label="A curve touching the zero line and turning upward"><path class="lesson-axis" d="M3 48H109"></path><path class="lesson-path" d="M16 8Q56 88 96 8"></path><circle cx="56" cy="48" r="4"></circle></svg></article>
-        <article><span class="lesson-number">02</span><div><h3>Count first. Then look closer.</h3><p>Geode uses exact arithmetic and a Sturm sequence to count and isolate real roots. Checked Geode refinement and bisection then narrow down their locations.</p></div><svg class="lesson-curve" viewBox="0 0 112 62" role="img" aria-label="An interval around a zero crossing"><path class="lesson-axis" d="M3 34H109"></path><path class="lesson-path" d="M14 55C43 58 63 10 98 9"></path><path class="lesson-bracket" d="M39 14V52M76 14V52"></path></svg></article>
-        <article><span class="lesson-number">03</span><div><h3>More digits. A smaller error.</h3><p>Requesting 30 accuracy digits asks for absolute error at most 10<sup>−30</sup>. MPFR supplies the precision; the graph uses ordinary floating-point numbers and can miss fine detail.</p></div><span class="precision-illustration" aria-hidden="true">10<sup>−30</sup></span></article>
+    <section id="series-panel" class="series-panel" aria-labelledby="series-heading">
+      <div class="series-topline">
+        <div class="section-heading"><span class="step-number">04 /</span><h2 id="series-heading">Root formula and convergence</h2></div>
+        <div id="series-selector" class="series-selector" hidden><label for="series-root">Inspect root</label><select id="series-root"></select></div>
+      </div>
+      <p id="series-empty" class="series-intro">Solve a polynomial to inspect each root’s formula and its convergence.</p>
+      <div id="series-content" hidden>
+        <p id="series-root-value" class="series-root-value"></p>
+        <p id="series-reduction-note" class="series-note" hidden></p>
+        <div id="series-exact" hidden><p class="exact-root"><var>x</var> = <code id="series-exact-value"></code></p><p class="series-intro">This root has an exact rational value. No infinite expansion is needed.</p></div>
+        <p id="series-unavailable" class="series-intro" hidden></p>
+        <div id="series-expansion" hidden>
+          <p class="series-intro">The infinite series is an exact formula for this root. A finite sum approximates it; the error bound shows how close it is.</p>
+          <div class="series-layout">
+            <div class="series-formula-pane">
+              <h3>The root’s analytic formula</h3>
+              <div class="math-scroll root-formula" tabindex="0" role="group" aria-label="Exact root formula">
+                <math display="block"><msub><mi>x</mi><mn id="series-root-index">1</mn></msub><mo>=</mo><mi>a</mi><mo>+</mo><mi mathvariant="normal">δ</mi><mi>S</mi><mo>(</mo><mrow id="series-arguments"></mrow><mo>)</mo></math>
+              </div>
+              <p class="series-note">The center <var>a</var>, scale <var>δ</var>, and parameters <var>t</var><sub>k</sub> below are exact fractions for the selected root.</p>
+              <details id="series-parameters-details" class="series-details">
+                <summary>Exact center, scale, and parameters</summary>
+                <dl id="series-parameters" class="parameter-list"></dl>
+              </details>
+              <div class="math-scroll series-definition" tabindex="0" role="group" aria-label="The Geode series">
+                <math display="block"><mi>S</mi><mo>=</mo><munder><mo>∑</mo><mrow><msub><mi>m</mi><mn>2</mn></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>m</mi><mi>d</mi></msub><mo>≥</mo><mn>0</mn></mrow></munder><msub><mi>C</mi><mi>m</mi></msub><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msubsup><mi>t</mi><mi>k</mi><msub><mi>m</mi><mi>k</mi></msub></msubsup></math>
+              </div>
+              <p class="series-note">Each choice of nonnegative exponents contributes one product. We group products by their total order <span class="math">j = m₂ + ⋯ + m<sub>d</sub></span>.</p>
+              <details id="series-math-details" class="series-details">
+                <summary>Coefficients and convergence</summary>
+                <div class="math-scroll" tabindex="0" role="group" aria-label="Exact series coefficient">
+                  <math display="block"><msub><mi>C</mi><mi>m</mi></msub><mo>=</mo><mfrac><mrow><mo>(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mi>k</mi><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo></mrow><mrow><mo>(</mo><mn>1</mn><mo>+</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mo>(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo>)</mo><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msub><mi>m</mi><mi>k</mi></msub><mo>!</mo></mrow></mfrac></math>
+                </div>
+                <p>The first grouped coefficients are:</p>
+                <div class="first-coefficients"><span class="math">s₀ = 1</span><span class="math">s₁ = ∑<sub>k=2,…,d</sub> t<sub>k</sub></span><span class="math">s₂ = ½ ∑<sub>k,l=2,…,d</sub> (k + l) t<sub>k</sub> t<sub>l</sub></span></div>
+                <p>The change of variable is <span class="math">x = a + δy</span>. Its root equation becomes <span class="math">y = 1 + ∑<sub>k=2,…,d</sub> t<sub>k</sub>y<sup>k</sup></span>, and <var>S</var> selects the branch near 1.</p>
+                <p>Geode certifies this local expansion and checks the selected root with exact Sturm counts. In the auxiliary series <span class="math">S(z) = ∑ s<sub>j</sub>z<sup>j</sup></span>, the certified radius <span class="math">ρ &gt; 1</span> ensures convergence at <span class="math">z = 1</span>. The bounds include rounding of the full displayed partial sums.</p>
+              </details>
+            </div>
+            <div class="series-convergence-pane">
+              <h3>Add orders and compare the error</h3>
+              <div class="order-label"><label for="series-order">Orders included</label><output id="series-order-label" for="series-order"></output></div>
+              <input id="series-order" type="range" min="1" max="9" value="3" step="1" aria-describedby="series-order-help">
+              <p id="series-order-help" class="series-note">Start with <span class="math">s₀ = 1</span>, then add groups of increasing order. These nine orders may not reach the separately requested numerical-root accuracy.</p>
+              <div class="partial-sum" aria-live="polite" aria-atomic="true"><span>Partial sum preview</span><output id="series-sum"></output><p>Certified error bound ≈ <span id="series-bound"></span></p></div>
+              <table class="series-table"><caption>Convergence of the selected expansion</caption><thead><tr><th scope="col">Order <var>j</var></th><th scope="col">Sum preview</th><th scope="col">Error bound preview</th></tr></thead><tbody id="series-steps"></tbody></table>
+              <p class="series-note">Previews shorten the numbers. The bound applies to the full partial sum below.</p>
+              <details id="series-sum-details" class="series-details"><summary>Full partial sum and certified bound</summary><dl class="parameter-list"><dt>Partial sum</dt><dd><code id="series-full-sum" tabindex="0"></code></dd><dt>Absolute error at most</dt><dd><code id="series-full-bound" tabindex="0"></code></dd></dl></details>
+              <details id="series-terms-details" class="series-details"><summary>Exact terms in this partial sum</summary><p>For each order <var>j</var>, <span class="math">s<sub>j</sub></span> is the sum of its products. The contribution to <var>x</var> is <span class="math">δs<sub>j</sub></span>; the center <var>a</var> is added once.</p><table class="series-table exact-terms"><thead><tr><th scope="col">Order</th><th scope="col"><span class="math">s<sub>j</sub></span></th><th scope="col"><span class="math">δs<sub>j</sub></span></th></tr></thead><tbody id="series-terms"></tbody></table></details>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <section class="fine-print" aria-label="About numerical accuracy"><span class="fine-print-label">ONE IMPORTANT DETAIL</span><p>The accuracy bound applies to the polynomial’s stored binary coefficients. Decimal inputs are rounded at your chosen working precision, so very sensitive or repeated roots can change. Higher precision preserves more of what you enter.</p></section>
+    <aside id="example-note" class="example-note" aria-label="What to notice in this example"><span class="note-label">WHAT TO NOTICE</span><p id="example-explanation">A cubic can cross the axis three times. Follow this curve from left to right, then solve to locate each crossing.</p><span class="note-mark" aria-hidden="true">↗</span></aside>
+
+    <section id="how-it-works" class="learning-section" aria-labelledby="learning-heading">
+      <div class="learning-intro"><p class="eyebrow">THE METHOD</p><h2 id="learning-heading">Root isolation<br> and precision.</h2><p>Exact root counts establish which roots exist. Certified refinement controls the error in their decimal approximations.</p><a href="https://github.com/hollowsunhc/Geode-Root-Solver#mathematics-and-performance" target="_blank" rel="noopener noreferrer">Read the mathematics <span aria-hidden="true">↗</span></a></div>
+      <div class="field-notes">
+        <article><span class="lesson-number">01</span><div><h3>Simple and repeated roots</h3><p>At a real root, the polynomial is zero. Some roots cross the horizontal axis; others turn around there. Repeated roots appear once in the results.</p></div><svg class="lesson-curve" viewBox="0 0 112 62" role="img" aria-label="A curve touching the zero line and turning upward"><path class="lesson-axis" d="M3 48H109"></path><path class="lesson-path" d="M16 8Q56 88 96 8"></path><circle cx="56" cy="48" r="4"></circle></svg></article>
+        <article><span class="lesson-number">02</span><div><h3>Counting and isolating roots</h3><p>Geode uses exact arithmetic and a Sturm sequence to count and isolate real roots. Checked Geode refinement and bisection then narrow down their locations.</p></div><svg class="lesson-curve" viewBox="0 0 112 62" role="img" aria-label="An interval around a zero crossing"><path class="lesson-axis" d="M3 34H109"></path><path class="lesson-path" d="M14 55C43 58 63 10 98 9"></path><path class="lesson-bracket" d="M39 14V52M76 14V52"></path></svg></article>
+        <article><span class="lesson-number">03</span><div><h3>Precision and absolute error</h3><p>Requesting 30 accuracy digits asks for absolute error at most 10<sup>−30</sup>. MPFR supplies the precision; the graph uses ordinary floating-point numbers and can miss fine detail.</p></div><span class="precision-illustration" aria-hidden="true">10<sup>−30</sup></span></article>
+      </div>
+    </section>
+
+    <section class="fine-print" aria-label="About numerical accuracy"><span class="fine-print-label">EXACT DECIMAL INPUTS</span><p>Decimal coefficients are exact rational numbers: <code>0.1</code> means <code>1/10</code>. Returned decimal root values approximate roots of exactly that polynomial. Working precision controls the calculations and available accuracy; the graph uses ordinary floating-point arithmetic.</p></section>
   </main>
 
-  <footer class="site-footer page-width"><p><strong>geode</strong> <span>A little lab for real roots.</span></p><nav aria-label="Project resources"><a href="./source/geode-browser-source.tar.gz" download>Download source</a><a href="./THIRD_PARTY_LICENSES.txt">Licenses</a><a href="https://github.com/hollowsunhc/Geode-Root-Solver/blob/main/docs/WEB_SECURITY.md" target="_blank" rel="noopener noreferrer">Limits &amp; privacy</a><a href="https://github.com/hollowsunhc/Geode-Root-Solver" target="_blank" rel="noopener noreferrer">Made by Patrick Laurin <span aria-hidden="true">↗</span></a></nav></footer>
+  <footer class="site-footer page-width"><p><strong>geode</strong> <span>Polynomial root solver.</span></p><nav aria-label="Project resources"><a href="./source/geode-browser-source.tar.gz" download>Download source</a><a href="./THIRD_PARTY_LICENSES.txt">Licenses</a><a href="https://github.com/hollowsunhc/Geode-Root-Solver/blob/main/docs/WEB_SECURITY.md" target="_blank" rel="noopener noreferrer">Limits &amp; privacy</a><a href="https://github.com/hollowsunhc/Geode-Root-Solver" target="_blank" rel="noopener noreferrer">Made by Patrick Laurin <span aria-hidden="true">↗</span></a></nav></footer>
   <noscript><p class="noscript-message">This interactive lab needs JavaScript to draw curves and run the solver locally. You can still read the explanations and download the source.</p></noscript>
 </body>
 </html>

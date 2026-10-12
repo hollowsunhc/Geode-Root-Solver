@@ -33,7 +33,8 @@ void expect_throw(Function function) {
     throw std::runtime_error("Expected an exception.");
 }
 
-void check_roots(const Poly& polynomial, std::vector<Real> expected,
+template <class Coefficient>
+void check_roots(const geode::Polynomial<Coefficient>& polynomial, std::vector<Real> expected,
                  const Real& tolerance = Real("1e-30")) {
     const auto roots = geode::RootSolver<>(polynomial).compute_roots(tolerance);
     check(roots.size() == expected.size(), "Wrong number of real roots.");
@@ -62,6 +63,28 @@ void no_real_roots() {
     check_roots(Poly({1, 0, 1}), {});
     check_roots(Poly({1, 1, 1}), {});
     check_roots(Poly({1, 0, 2, 0, 1}), {});
+}
+
+void exact_coefficients() {
+    using RationalPoly = geode::Polynomial<geode::mpq>;
+    geode::set_global_bits(128);
+    check_roots(RationalPoly({geode::mpq(1, 100), geode::mpq(-1, 5), 1}), {Real("0.1")});
+
+    const mpz_class denominator("1" + std::string(100, '0'));
+    const geode::mpq constant = 1 + geode::mpq(1, denominator);
+    check_roots(RationalPoly({constant, -2, 1}), {}); // (x - 1)^2 + 1e-100
+    check_roots(Poly({Real(constant), -2, 1}), {1});  // Stored MPFR input has rounded to (x - 1)^2.
+
+    check_roots(RationalPoly({geode::mpq(mpz_class(-2), mpz_class(-4)), geode::mpq(-2, 2),
+                              geode::mpq(0, 3)}),
+                {Real("0.5")});
+    check_roots(RationalPoly({5}), {});
+    expect_throw<std::invalid_argument>([] { geode::RootSolver<> solver(RationalPoly({0})); });
+    expect_throw<std::invalid_argument>([] {
+        geode::mpq invalid(1);
+        mpz_set_ui(invalid.get_den_mpz_t(), 0);
+        geode::RootSolver<> solver(RationalPoly({invalid, 1}));
+    });
 }
 
 void invalid_input() {
@@ -257,6 +280,7 @@ int main() {
         {"examples", examples},
         {"repeated roots", repeated_roots},
         {"no real roots", no_real_roots},
+        {"exact coefficients", exact_coefficients},
         {"invalid input", invalid_input},
         {"Geode coefficients", geode_coefficients},
         {"precision", precision},

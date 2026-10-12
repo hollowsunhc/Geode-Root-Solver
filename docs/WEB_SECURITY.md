@@ -19,10 +19,20 @@ and WebAssembly module; it does not send coefficients to a server.
 | One calculation | 5 seconds after the module is ready |
 | Concurrent calculations | One worker per solver client |
 | WebAssembly linear memory | 128 MiB maximum, including its 2 MiB stack |
+| Analytical expansion | Orders 0 through 8 per root; at most 7 candidate centers |
+| Exact series fraction | At most 4,096 printed characters |
 
 The page and worker use the same request validator. The C++ entry point independently
-checks the numeric grammar and bounds before constructing MPFR values. The page
+checks the numeric grammar and bounds before constructing exact rational values. The page
 never evaluates input as JavaScript, HTML, or a symbolic expression.
+
+Series generation runs in the same worker and shares its five-second deadline
+and memory ceiling. Exact fractions are checked during coefficient arithmetic,
+before conversion to decimal text. A controlled fraction-size or convergence
+failure omits only that root's formula; a watchdog timeout or allocation failure
+stops the complete request. The client checks formula counts, numeric formats,
+string lengths, and the number of steps before rendering. Formula values are
+inserted as text, never executed as code or interpreted as HTML.
 
 Cancel, a superseding request, timeout, successful completion, and worker errors
 all terminate the worker. This releases its Wasm instance and prevents a stalled
@@ -55,6 +65,9 @@ tests deterministic; normal solving uses the real compiled module.
 
 `npm test` also checks root correctness, including an independent rational check
 of the 120-digit square-root result and exact decimal output for very large roots.
+It also checks preservation of decimal repeated roots, hyper-Catalan series
+coefficients against known values, and independently verifies partial-sum error
+bounds with exact integer arithmetic.
 Graph tests exercise large and degenerate axis ranges so floating-point rounding
 cannot turn tick generation into an unbounded loop. `npm audit` checks development dependencies.
 Passing these checks is evidence for the tested controls, not a promise that every
@@ -73,9 +86,11 @@ possible security flaw has been eliminated.
   response headers on worker files. This site has no privileged actions to protect
   from clickjacking. A future server, authentication feature, or external input
   source would require a new threat review and server-enforced controls.
-- Decimal coefficient strings are rounded to the chosen binary precision. Root
-  guarantees apply to those stored values. Graphs use ordinary floating-point
-  arithmetic and are explanatory, not proof of root accuracy.
+- Decimal input coefficients are exact rationals. Computed roots and partial sums
+  are finite-precision approximations with separate absolute error bounds.
+  Graphs use ordinary floating-point arithmetic and are explanatory, not proof
+  of root accuracy. The finite series preview need not achieve the root solver's
+  requested accuracy, and some valid inputs have no formula within the series budget.
 
 ## Dependency and source distribution
 

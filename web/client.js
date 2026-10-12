@@ -1,6 +1,41 @@
 /** @file Cancellable browser interface to the isolated solver. */
 import { LIMITS, verifyRequest } from './policy.js';
 
+/** @brief Bound numeric text before parsing or rendering any worker output. */
+function validNumber(value, pattern) {
+  return typeof value === 'string' && value.length <= 4096 && pattern.test(value);
+}
+
+/** @brief Accept finite decimal strings without converting their precision to Number. */
+function validDecimal(value) {
+  return validNumber(value, /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/);
+}
+
+/** @brief Accept integer fractions with a strictly positive denominator. */
+function validRational(value) {
+  return validNumber(value, /^[+-]?\d+(?:\/[1-9]\d*)?$/);
+}
+
+/** @brief Compare a positive rational with one using bounded digit strings only. */
+function radiusAboveOne(value) {
+  if (!validRational(value) || value.startsWith('-')) return false;
+  const [numerator, denominator = '1'] = value.replace(/^\+?0*/, '').split('/');
+  return numerator.length > denominator.length || (numerator.length === denominator.length && numerator > denominator);
+}
+
+/** @brief Validate one exact value or certified expansion before exposing it to the view. */
+function validSeries(entry, degree) {
+  if (!entry || !Number.isInteger(entry.reducedDegree) || entry.reducedDegree < 1 || entry.reducedDegree > degree) return false;
+  if (entry.kind === 'exact') return validRational(entry.value);
+  if (entry.kind === 'unavailable') return typeof entry.reason === 'string' && entry.reason.length > 0 && entry.reason.length <= 4096;
+  return entry.kind === 'series' && entry.reducedDegree >= 2 && validRational(entry.center) &&
+    validRational(entry.scale) && !/^[+-]?0+(?:\/|$)/.test(entry.scale) && radiusAboveOne(entry.radius) &&
+    Array.isArray(entry.parameters) && entry.parameters.length === entry.reducedDegree - 1 && entry.parameters.every(validRational) &&
+    Array.isArray(entry.steps) && entry.steps.length === 9 && entry.steps.every((step, order) => step &&
+      step.order === order && validRational(step.coefficient) && validRational(step.term) &&
+      validDecimal(step.sum) && validDecimal(step.bound) && !step.bound.startsWith('-'));
+}
+
 /** @brief Own at most one worker and terminate it on every terminal path. */
 export class SolverClient {
   #cancel = null;
@@ -9,7 +44,7 @@ export class SolverClient {
    * @brief Solve a bounded request, cancelling any earlier calculation.
    * @param request Coefficient text, working bits, and requested digits.
    * @param onStatus Callback receiving loading and computing status changes.
-   * @returns Promise of MPFR root strings and the calculation metadata.
+   * @returns Promise of root strings, exact formula data, and calculation metadata.
    * @throws Error through the returned Promise on invalid input or worker failure.
    */
   async solve(request, onStatus = () => {}) {
@@ -50,7 +85,9 @@ export class SolverClient {
             } else if (data?.type === 'result' && computing) {
               const result = data.result;
               if (!result || !Array.isArray(result.roots) || result.roots.length > normalized.degree ||
-                  !result.roots.every(root => typeof root === 'string') || result.degree !== normalized.degree ||
+                  !result.roots.every(validDecimal) || result.degree !== normalized.degree ||
+                  !Array.isArray(result.series) || result.series.length !== result.roots.length ||
+                  !result.series.every(entry => validSeries(entry, normalized.degree)) ||
                   result.bits !== normalized.bits || result.digits !== normalized.digits) {
                 throw new Error('The solver returned an invalid result.');
               }

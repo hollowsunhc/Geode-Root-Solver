@@ -16,7 +16,16 @@ anything. The same C++ solver runs as WebAssembly in a background worker. Inputs
 and results stay in your browser. The graph uses approximate coordinates; expand
 a result to see an exact decimal encoding of the computed MPFR approximation.
 The requested absolute error bound determines its accuracy, not the number of
-printed digits.
+printed digits. Decimal input coefficients are kept as exact rational numbers:
+`0.01, -0.2, 1` has the same single distinct root as `1, -20, 100`.
+
+After solving, select a root in **Root formula** to inspect its analytical
+expression, exact rational parameters, and first nine total-degree layers.
+The partial-sum control shows how the approximation and its certified error
+bound change. Exact rational roots identified by the formula calculation are
+shown as fractions. The infinite series represents the root exactly; a finite
+partial sum is an approximation. The analytical series section below describes
+the convergence certificate and its limits.
 
 The lab includes examples of crossings, repeated roots, absent real roots, and
 nearby roots, with explanations of precision and error bounds. Browser calculations
@@ -199,11 +208,23 @@ Each returned value is within `tolerance` of a distinct real root. The default
 tolerance is `1e-30`. A small value of `|P(x)|` alone does not prove this accuracy,
 especially near a repeated root.
 
-The guarantee applies to the **stored coefficients**. MPFR stores binary numbers.
-A decimal string can be rounded when you construct a coefficient. Very close or
-repeated roots can change when the coefficients change. Set enough precision
-**before** you construct the coefficients. Use decimal strings for values that
-would lose digits in a C++ `double` literal.
+The guarantee applies to the **supplied coefficients**. The browser preserves
+decimal coefficients exactly. Native callers can do the same with
+`Polynomial<geode::mpq>`:
+
+```cpp
+const geode::Polynomial<geode::mpq> polynomial({
+    geode::mpq(1, 100), geode::mpq(-1, 5), geode::mpq(1)
+});
+const auto roots = geode::RootSolver<>(polynomial).compute_roots(); // One root near 1/10.
+```
+
+For `Polynomial<HighPrecFloat>`, the guarantee applies to the stored binary
+values. Constructing those values from decimal strings can round their
+coefficients, changing close or repeated roots. Set precision **before**
+constructing MPFR coefficients, or use rational coefficients to avoid that
+rounding. The working precision still limits how accurately the returned roots
+can be represented, even when coefficients are exact.
 
 | Input or condition | Result |
 | --- | --- |
@@ -212,6 +233,7 @@ would lose digits in a C++ `double` literal.
 | Repeated real root | One result for that root |
 | Empty coefficient list or all zero coefficients | `std::invalid_argument` from the solver |
 | NaN or infinite coefficient | `std::invalid_argument` |
+| Rational coefficient with zero denominator | `std::invalid_argument` |
 | Zero, negative, NaN, or infinite tolerance | `std::invalid_argument` |
 | Too few bits to meet accuracy or distinguish roots | `std::runtime_error`; increase precision |
 | Invalid number string or base | `std::invalid_argument` |
@@ -219,8 +241,9 @@ would lose digits in a C++ `double` literal.
 The default precision is 256 bits, about 77 decimal digits. `set_global_bits` and
 `get_global_bits` control the default **for the current thread**. Existing numbers
 retain their precision. Arithmetic uses at least the precision of both operands.
-`RootSolver` supports `HighPrecFloat`; it does not support `double` as its template
-argument.
+`RootSolver` supports MPFR or exact rational input polynomials and returns
+`HighPrecFloat` roots. Its template argument is the result type and must remain
+`HighPrecFloat`; `double` is not supported.
 
 `Ball` checks membership in an interval with a midpoint and radius. It is not a
 complete interval-arithmetic package. The `PI` constant has 256-bit
@@ -262,6 +285,37 @@ The tests cover the examples, repeated and absent real roots, close roots, large
 scale differences, a degree-17 polynomial, 120-digit accuracy, invalid inputs,
 precision changes, header linkage, and published Geode coefficients. Checks run
 in both Debug and Release builds.
+
+### Analytical series
+
+For a square-free polynomial shifted to a rational center `a`, write
+`P(a+h) = b0 + b1*h + ... + bd*h^d`. With `delta = -b0/b1` and
+`tk = -bk*delta^(k-1)/b1`, substituting `x = a + delta*y` gives
+`1 - y + sum tk*y^k = 0`. Its hyper-Catalan series is the `S` above, and the
+root formula is `x = a + delta*S(t2,...,td)`. Removing repeated factors preserves
+all distinct roots. The native numerical solver uses checked Geode refinement;
+the browser computes this separate analytical representation for inspection.
+
+The browser groups monomials by total degree using an auxiliary variable:
+`S(z) = 1 + z*sum tk*S(z)^k = sum sj*z^j`. Exact polynomial convolutions compute
+`s0` through `s8` without enumerating every multi-index. The first layers are
+`s0=1`, `s1=sum tk`, and `s2=(sum tk)*(sum k*tk)`.
+
+Each displayed expansion has a convergence certificate. Let
+`B = sum k*abs(tk)*2^(k-1)`. The browser requires `0 < B < 1/4` and sets
+`rho = 1/(2*B)`. For complex `abs(z) <= rho`, the fixed-point map is a contraction
+on `abs(y-1) <= 1`, with derivative bound `1/2` and `abs(S(z)) <= 2`.
+Cauchy's coefficient bound then gives the absolute truncation error after order
+`N` as at most `2*abs(delta)*rho^(-N)/(rho-1)`. The reported bound also includes
+the exact rounding error of the displayed MPFR partial sum and is rounded upward.
+Abbreviated previews are marked approximate; the bound applies to the full sum.
+
+Exact Sturm counts check which root the expansion describes. Centers that fail
+the convergence or branch check are rejected. The browser tries at most seven
+centers and limits exact fractions to 4,096 characters. If those limits prevent
+a formula, the numerical result remains available with an explanation. A worker
+timeout or memory failure stops the entire request. Nine displayed layers need
+not reach the accuracy requested for the separately computed numerical root.
 
 ### References
 

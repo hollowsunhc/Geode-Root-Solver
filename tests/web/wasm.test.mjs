@@ -32,15 +32,29 @@ function decimalRational(text) {
   return { numerator, denominator };
 }
 
-test('decimal output retains the absolute bound for a very large stored root', () => {
-  const result = solve('-1e100 1', 128, 1);
+test('large exact decimal coefficients require enough bits for the requested absolute error', () => {
+  assert.match(solve('-1e100 1', 128, 1).error, /more bits/i);
+  const result = solve('-1e100 1', 512, 1);
   assert.equal(result.error, undefined);
-  // Exact integer represented by round-to-nearest MPFR 1e100 at 128-bit precision.
-  const stored = 9999999999999999999999999999999999999977097647868758532633238403510597078305024613172747796087832576n;
   const { numerator, denominator } = decimalRational(result.roots[0]);
-  const difference = numerator - stored * denominator;
-  assert.ok((difference < 0n ? -difference : difference) * 10n <= denominator,
-    'The printed decimal must be within 0.1 of the stored polynomial root.');
+  assert.equal(numerator, 10n ** 100n * denominator);
+});
+
+test('exact decimal input preserves repeated roots and equivalent scientific notation', () => {
+  for (const input of ['0.01,-0.2,1', '+.0100,-.200,1.0', '1e-2,-2e-1,1e0', '1,-20,100']) {
+    const result = solve(input, 128, 30);
+    assert.equal(result.error, undefined, input);
+    assert.equal(result.roots.length, 1, input);
+    const { numerator, denominator } = decimalRational(result.roots[0]);
+    const difference = 10n * numerator - denominator;
+    assert.ok((difference < 0n ? -difference : difference) * 10n ** 30n <= 10n * denominator);
+  }
+});
+
+test('a positive minimum smaller than working precision does not become a repeated root', () => {
+  const result = solve(`1.${'0'.repeat(59)}1,-2,1`, 128, 30); // (x - 1)^2 + 1e-60
+  assert.equal(result.error, undefined);
+  assert.deepEqual(result.roots, []);
 });
 
 test('a small dyadic root is serialized without rounding its decimal expansion', () => {
