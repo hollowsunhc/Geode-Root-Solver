@@ -181,7 +181,8 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 #series-product-cap { margin-top: 10px; }
 #series-partial-substitution { font-size: 11px; color: var(--muted); }
 .math-scroll { max-width: 100%; overflow-x: auto; scrollbar-width: thin; padding: 3px 2px; }
-.math-scroll math { width: max-content; margin: 15px auto; font-size: 21px; }
+/** @brief Center display math internally; intrinsic-width auto margins misalign it in WebKit. */
+.math-scroll math { width: max-content; min-width: 100%; margin: 15px 0; font-size: 21px; white-space: nowrap; }
 .root-formula math { margin-block: 17px; font-size: 30px; color: var(--blue); }
 .series-definition { margin-top: 18px; }
 .series-details { margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 11px; color: var(--muted); }
