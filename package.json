@@ -1,0 +1,14 @@
+{
+  "name": "geode-browser-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:web": "bash scripts/build-web.sh",
+    "test": "node --test tests/web/*.test.mjs",
+    "test:browser": "playwright test",
+    "verify:security": "node --test tests/web/*.test.mjs && playwright test tests/web/security.spec.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0"
+  }
+}

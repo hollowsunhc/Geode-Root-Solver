@@ -8,6 +8,59 @@ in ascending order, or throws an exception if it cannot meet the requested accur
 The library handles zero roots, repeated roots, missing linear terms, and
 polynomials with no real roots. It does not return complex roots or multiplicities.
 
+## Interactive browser lab
+
+Try the [Geode polynomial lab](https://hollowsunhc.github.io/Geode-Root-Solver/)
+to explore examples, plot a polynomial, and find its real roots without installing
+anything. The same C++ solver runs as WebAssembly in a background worker. Inputs
+and results stay in your browser. The graph uses approximate coordinates; expand
+a result to see an exact decimal encoding of the computed MPFR approximation.
+The requested absolute error bound determines its accuracy, not the number of
+printed digits.
+
+The lab includes examples of crossings, repeated roots, absent real roots, and
+nearby roots, with explanations of precision and error bounds. Browser calculations
+are limited to degree 16, 512 working bits, five seconds, and 128 MiB of Wasm linear
+memory. Cancel stops the worker. See [browser security](docs/WEB_SECURITY.md) for
+the full limits and their scope.
+
+### Build and verify the website
+
+The web build is separate from the native CMake build. On Linux or WSL, install
+Git, Python 3, Make, a native C/C++ compiler, curl, tar, xz, and Node.js 22 or later.
+Activate the pinned [Emscripten SDK](https://emscripten.org/docs/getting_started/downloads.html):
+
+```sh
+git clone https://github.com/emscripten-core/emsdk.git
+cd emsdk
+./emsdk install 4.0.23
+./emsdk activate 4.0.23
+source ./emsdk_env.sh
+```
+
+From this repository, run:
+
+```sh
+npm ci
+npm run build:web
+npm test
+npx playwright install --with-deps chromium
+npm run test:browser
+npm run verify:security
+python3 -m http.server 4173 --bind 127.0.0.1 --directory out/web
+```
+
+Open `http://127.0.0.1:4173`. The first build compiles pinned GMP and MPFR sources;
+later builds reuse them. `GEODE_WEB_CACHE` can move the dependency cache from
+`out/web-cache`, and `GEODE_BUILD_JOBS` sets its parallel build count (default 4).
+The build checks source archive hashes and writes the complete static site to
+`out/web`, including license notices and a downloadable source bundle.
+
+Publish the contents of `out/web` to the root of the `gh-pages` branch and select
+that branch in **Settings → Pages → Deploy from a branch**. Keep `.nojekyll` and
+the `source` directory. All asset paths are relative, including the worker and
+Wasm module. No custom domain, backend, or CI workflow is required.
+
 ## Build and test
 
 Use CMake 3.23 or later, Ninja, Git, and a C++17 compiler. The presets use vcpkg

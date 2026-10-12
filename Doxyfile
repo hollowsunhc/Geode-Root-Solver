@@ -1,6 +1,6 @@
 PROJECT_NAME           = "Geode Root Solver"
 OUTPUT_DIRECTORY       = out/docs
-INPUT                  = include README.md
+INPUT                  = include web/solver.cpp README.md docs/WEB_SECURITY.md
 RECURSIVE              = YES
 USE_MDFILE_AS_MAINPAGE  = README.md
 GENERATE_LATEX         = NO
