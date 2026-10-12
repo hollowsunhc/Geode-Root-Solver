@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-labelledby="title description">
+  <title id="title">Geode Root Solver</title>
+  <desc id="description">The blue, cream, and coral Geode crystal mark beside the project name and the words Get to the root of it.</desc>
+  <rect width="1280" height="640" fill="#f5f3eb"/>
+  <svg x="96" y="128" width="384" height="384" viewBox="0 0 64 64">
+    <rect width="64" height="64" rx="17" fill="#3152d8"/>
+    <path d="m31 10 19 11 3 22-19 12L13 43 11 22Z" fill="none" stroke="#faf9f3" stroke-width="3" stroke-linejoin="round"/>
+    <path d="m31 10-6 20-12 13m12-13 9 25m-9-25 25-9m-25 9 28 13" fill="none" stroke="#faf9f3" stroke-width="2" stroke-linejoin="round"/>
+    <path d="m25 30 12-5 7 12-10 9Z" fill="#ea927d" stroke="#faf9f3" stroke-width="2" stroke-linejoin="round"/>
+  </svg>
+  <text x="560" y="282" fill="#23312d" font-family="Arial, Helvetica, sans-serif" font-size="120" font-weight="700" letter-spacing="-6">geode</text>
+  <text x="566" y="328" fill="#3152d8" font-family="Arial, Helvetica, sans-serif" font-size="20" font-weight="600" letter-spacing="5">ROOT SOLVER</text>
+  <path d="M560 370H1180" stroke="#d9dbd1"/>
+  <text x="560" y="432" fill="#23312d" font-family="Georgia, 'Times New Roman', serif" font-size="42">Get to the <tspan fill="#3152d8" font-style="italic">root</tspan> of it.</text>
+</svg>
