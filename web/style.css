@@ -1,4 +1,4 @@
-/** @file Responsive, locally rendered visual design for the Geode polynomial lab. */
+/** @file Responsive, locally rendered visual design for the Geode root solver. */
 :root {
   color-scheme: light;
   --paper: #f5f3eb;
@@ -46,7 +46,6 @@ code { font-family: var(--mono); }
 .github-link span { margin-left: 10px; font-size: 18px; }
 .introduction { display: flex; align-items: end; justify-content: space-between; gap: 28px; padding: 31px 0 30px; }
 .eyebrow { font-size: 10px; letter-spacing: 1.7px; font-weight: 700; }
-.tiny-cross { display: inline-block; color: var(--coral); font-size: 17px; vertical-align: -1px; margin-right: 8px; }
 h1 { font: 400 clamp(38px, 4.2vw, 59px)/1.16 Georgia, "Times New Roman", serif; letter-spacing: -2px; margin-top: 9px; }
 h1 em { color: var(--blue); font-weight: 400; }
 .intro-copy { color: var(--muted); font-size: 14px; line-height: 1.75; padding-bottom: 5px; }

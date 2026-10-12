@@ -8,9 +8,9 @@ in ascending order, or throws an exception if it cannot meet the requested accur
 The library handles zero roots, repeated roots, missing linear terms, and
 polynomials with no real roots. It does not return complex roots or multiplicities.
 
-## Interactive browser lab
+## Interactive browser solver
 
-Try the [Geode polynomial lab](https://hollowsunhc.github.io/Geode-Root-Solver/)
+Try the [Geode root solver](https://hollowsunhc.github.io/Geode-Root-Solver/)
 to explore examples, plot a polynomial, and find its real roots without installing
 anything. The same C++ solver runs as WebAssembly in a background worker. Inputs
 and results stay in your browser. The graph uses approximate coordinates; expand
