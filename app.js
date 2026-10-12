@@ -3,6 +3,7 @@ import { LIMITS, verifyRequest } from './policy.js';
 import { SolverClient } from './client.js';
 import { PolynomialPlot, shortRootLabel } from './plot.js';
 import { SeriesView } from './series-view.js';
+import { initQuadraticStory } from './quadratic-story.js';
 
 const examples = {
   crossings: {
@@ -283,3 +284,4 @@ for (const button of document.querySelectorAll('[data-example]')) {
 }
 coefficientInput.maxLength = LIMITS.inputLength;
 updatePreview();
+initQuadraticStory(document.querySelector('#quadratic-story'));
