@@ -286,6 +286,40 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 .site-footer nav { display: flex; gap: 24px; }
 .site-footer a { color: var(--muted); font-size: 10px; text-decoration: none; }
 .noscript-message { padding: 20px; background: #ffdbbd; text-align: center; }
+/** @brief Follow the system palette for text, diagrams, and native controls. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --paper: #151c19;
+    --surface: #1d2722;
+    --ink: #e7ebe0;
+    --muted: #abb8a9;
+    --line: #3b4a40;
+    --blue: #9bafff;
+    --blue-soft: #28354c;
+    --coral: #ef9b82;
+  }
+  .skip-link { color: var(--paper); }
+  .example:hover { background: var(--surface); }
+  .example.is-selected, .plot-tools button:hover, .copy-root:hover,
+  .series-selector select, .product-picker select, .quadratic-root-control select { border-color: #667aab; }
+  .editor-panel, .precision-fields select option { background: #23312d; }
+  textarea { background: var(--paper); border-color: #748276; }
+  #plot-grid line { stroke: #303d34; }
+  #plot-axes line, .lesson-axis { stroke: #748575; }
+  #plot-axes .zero-axis { stroke: var(--muted); }
+  #plot-labels text { fill: var(--muted); }
+  .hover-line { stroke: var(--muted); }
+  .plot-footer { border-color: var(--line); background: var(--paper); }
+  .result-badge.is-solved { color: #b8d6ac; background: #2a3d2b; }
+  .series-table:not(.exact-terms) tbody tr:last-child { background: var(--blue-soft); }
+  .example-note { background: #2e2d22; }
+  .note-label { color: #cfb28a; }
+  .example-note p { color: #c7c8b7; }
+  .learning-intro a { border-color: #667aab; }
+  .polygon-triangle { fill: #51382e; }
+  .noscript-message { background: #473424; }
+}
 @keyframes pulse { 50% { opacity: 0.35; } }
 @media (min-width: 1500px) { #plot { height: 306px; } }
 @media (max-width: 1100px) {
