@@ -6,7 +6,9 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <meta name="referrer" content="no-referrer">
   <meta name="description" content="Find every distinct real root of a polynomial, inspect its exact analytic formula, and explore how its series converges.">
-  <meta name="theme-color" content="#f5f3eb">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f5f3eb" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#151c19" media="(prefers-color-scheme: dark)">
   <title>Geode · The polynomial lab</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./style.css">
@@ -277,8 +279,8 @@
     <section id="quadratic-story" class="learning-section" aria-labelledby="quadratic-heading">
       <div class="learning-intro">
         <p class="eyebrow">TRY THE IDEA</p>
-        <h2 id="quadratic-heading">The quadratic formula,<br> seen another way.</h2>
-        <p>Keep one equation, <span class="math">tx² − x + 1 = 0</span>, and follow what happens to its roots and their series.</p>
+        <h2 id="quadratic-heading">From the quadratic formula<br> to Catalan numbers.</h2>
+        <p>For the quadratic <span class="math">tx² − x + 1 = 0</span>, the solver’s series has Catalan coefficients. Its infinite sum is exactly the root given by the quadratic formula. Add terms below to see how a finite approximation approaches it.</p>
         <ol class="quadratic-guide">
           <li><h3>An exact fraction</h3><p>Start at <span class="math">t = 2/9</span>. The smaller root is exactly <span class="math">3/2</span>. Add terms: infinitely many nonzero contributions can sum to a rational number.</p></li>
           <li><h3>The other root</h3><p>Select the larger root. It is <span class="math">3</span> in this example. The same series reaches it after changing the center and reversing the scale.</p></li>
