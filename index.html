@@ -66,7 +66,7 @@
           <div><label for="digits">Accuracy digits</label><input id="digits" name="digits" type="number" inputmode="numeric" min="1" max="60" step="1" value="30" aria-describedby="precision-help"></div>
         </div>
         <p id="precision-help" class="field-help">Absolute error at most 10<sup>−30</sup>. Up to 60 digits at 256 bits.</p>
-        <p id="form-error" class="form-error" role="alert" hidden></p>
+        <p id="form-error" class="form-error" role="alert" tabindex="-1" hidden></p>
         <div class="solve-actions"><button id="solve-button" class="solve-button" type="submit"><span>Find real roots</span><span aria-hidden="true">↗</span></button><button id="cancel-button" class="cancel-button" type="button" hidden>Cancel</button></div>
         <p id="solver-status" class="solver-status" role="status" aria-live="polite" aria-atomic="true">Ready to solve.</p>
         <div class="local-note"><span class="local-dot" aria-hidden="true"></span> Computed here, in your browser.</div>
@@ -97,23 +97,28 @@
         <div class="results-topline"><div class="section-heading"><span class="step-number">03 /</span><h2 id="result-heading">Real roots</h2></div><span id="result-badge" class="result-badge">READY TO SOLVE</span></div>
         <p id="result-summary" class="result-summary">A root is an x-value where <span class="math">f(x) = 0</span>. Find every distinct real root, even when the curve only touches the axis.</p>
         <ol id="root-list" class="root-list" aria-label="Computed distinct real roots" hidden></ol>
+        <a id="formula-link" class="formula-link" href="#series-heading" hidden>See the worked formula <span aria-hidden="true">↓</span></a>
         <p id="result-note" class="result-note" hidden></p>
       </section>
     </section>
 
     <section id="series-panel" class="series-panel" aria-labelledby="series-heading">
       <div class="series-topline">
-        <div class="section-heading"><span class="step-number">04 /</span><h2 id="series-heading">Root formula and convergence</h2></div>
-        <div id="series-selector" class="series-selector" hidden><label for="series-root">Inspect root</label><select id="series-root"></select></div>
+        <div class="section-heading"><span class="step-number">04 /</span><h2 id="series-heading" tabindex="-1">Root formula and convergence</h2></div>
+        <div id="series-selector" class="series-selector" hidden><label for="series-root">Choose a root</label><select id="series-root"></select></div>
       </div>
-      <p id="series-empty" class="series-intro">Solve a polynomial to inspect each root’s formula and its convergence.</p>
+      <p id="series-empty" class="series-intro">Start with the polynomial above. Find its roots, then follow the formula one step at a time.</p>
+      <div id="series-start-actions" class="series-start-actions">
+        <button id="series-start" class="solve-button" type="submit" form="solver-form"><span>Show the worked formula</span><span aria-hidden="true">↓</span></button>
+        <a href="#coefficients">Edit the polynomial <span aria-hidden="true">↑</span></a>
+      </div>
       <div id="series-content" hidden>
         <p id="series-root-value" class="series-root-value"></p>
         <p id="series-reduction-note" class="series-note" hidden></p>
         <p id="series-exact" class="exact-root" hidden>Exact value: <var>x</var> = <code id="series-exact-value"></code></p>
         <p id="series-unavailable" class="series-intro" hidden></p>
         <div id="series-expansion" hidden>
-          <p class="series-intro">Follow one product from its exponents to the root’s partial sum. The infinite series gives the root exactly; the bound measures the error of a finite sum.</p>
+          <p class="series-intro">Choose a root above, then follow steps 1–6 from one product to the root’s partial sum. The infinite series gives the root exactly; the bound measures the error of a finite sum.</p>
           <div class="series-order-control">
             <div class="order-label"><label for="series-order">Orders included</label><output id="series-order-label" for="series-order"></output></div>
             <input id="series-order" type="range" min="1" max="9" value="3" step="1" aria-describedby="series-order-help">

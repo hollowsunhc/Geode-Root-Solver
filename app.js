@@ -33,6 +33,8 @@ const coefficientInput = document.querySelector('#coefficients');
 const bitsInput = document.querySelector('#bits');
 const digitsInput = document.querySelector('#digits');
 const solveButton = document.querySelector('#solve-button');
+const seriesStart = document.querySelector('#series-start');
+const formulaLink = document.querySelector('#formula-link');
 const cancelButton = document.querySelector('#cancel-button');
 const formError = document.querySelector('#form-error');
 const status = document.querySelector('#solver-status');
@@ -72,12 +74,15 @@ function setStatus(message, state = 'ready') {
 function setBusy(busy) {
   solveButton.disabled = busy;
   solveButton.firstElementChild.textContent = busy ? 'Finding roots…' : 'Find real roots';
+  seriesStart.disabled = busy;
+  seriesStart.firstElementChild.textContent = busy ? 'Finding roots…' : 'Show the worked formula';
   cancelButton.hidden = !busy;
   results.setAttribute('aria-busy', String(busy));
 }
 
 /** @brief Clear obsolete output so it can never describe a newly edited polynomial. */
 function clearResults() {
+  formulaLink.hidden = true;
   rootList.replaceChildren();
   rootList.hidden = true;
   resultHeading.textContent = 'Real roots';
@@ -205,6 +210,7 @@ function showResults(result, resultRevision) {
     rootList.append(row);
   }
   rootList.hidden = count === 0;
+  formulaLink.hidden = count === 0;
   resultNote.hidden = false;
   resultNote.textContent = count ? 'These decimal values approximate roots of the exact polynomial you entered. The error bound guarantees the requested absolute accuracy; extra printed digits are not all certified.' : 'Geode checks the whole real number line, including regions outside the graph’s current view.';
   plot.setRoots(result.roots);
@@ -215,6 +221,7 @@ function showResults(result, resultRevision) {
 
 form.addEventListener('submit', async event => {
   event.preventDefault();
+  const fromFormula = event.submitter === seriesStart;
   const solveRevision = ++revision;
   client.cancel();
   clearResults();
@@ -240,6 +247,7 @@ form.addEventListener('submit', async event => {
     });
     if (revision !== solveRevision) return;
     showResults(result, solveRevision);
+    if (fromFormula) document.querySelector('#series-heading').focus();
   } catch (error) {
     if (revision !== solveRevision) return;
     if (error.name === 'AbortError') {
@@ -248,6 +256,7 @@ form.addEventListener('submit', async event => {
       formError.textContent = error.message;
       formError.hidden = false;
       setStatus('The calculation stopped. See the message above.', 'error');
+      if (fromFormula) formError.focus();
     }
     resultBadge.textContent = 'READY TO TRY AGAIN';
   } finally {
