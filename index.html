@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="A small, interactive polynomial lab. Explore a curve, find every distinct real root, and discover the mathematics beneath it with Geode.">
+  <meta name="theme-color" content="#f5f3eb">
+  <title>Geode · The polynomial lab</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#lab">Skip to the polynomial lab</a>
+  <header class="site-header page-width">
+    <a class="brand" href="./" aria-label="Geode polynomial lab home">
+      <img src="./favicon.svg" alt="" width="38" height="38">
+      <span>geode<span class="brand-caption">ROOT SOLVER</span></span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a class="nav-active" href="#lab">The lab</a>
+      <a href="#how-it-works">How it works</a>
+      <a class="github-link" href="https://github.com/hollowsunhc/Geode-Root-Solver" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main class="page-width">
+    <section class="introduction" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow"><span class="tiny-cross" aria-hidden="true">✳</span> THE POLYNOMIAL LAB</p>
+        <h1 id="page-title">Get to the <em>root</em> of it.</h1>
+      </div>
+      <p class="intro-copy">A curve to explore. Roots to discover.<br>Big precision. A little mathematical curiosity.</p>
+    </section>
+
+    <section class="example-bar" aria-label="Choose an educational example">
+      <p class="example-label">A place to start <span aria-hidden="true">↘</span></p>
+      <div class="examples">
+        <button class="example is-selected" type="button" data-example="crossings" aria-pressed="true"><span class="example-number">01</span><span>Three crossings<small>The classic cubic</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
+        <button class="example" type="button" data-example="repeated" aria-pressed="false"><span class="example-number">02</span><span>Touch &amp; turn<small>A repeated root</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
+        <button class="example" type="button" data-example="no-real" aria-pressed="false"><span class="example-number">03</span><span>Above it all<small>No real roots</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
+        <button class="example" type="button" data-example="nearby" aria-pressed="false"><span class="example-number">04</span><span>A closer look<small>Two nearby roots</small></span><span class="example-arrow" aria-hidden="true">↗</span></button>
+      </div>
+    </section>
+
+    <section id="lab" class="workspace" aria-label="Interactive polynomial lab">
+      <form id="solver-form" class="editor-panel" novalidate>
+        <div class="section-heading"><span class="step-number">01 /</span><h2>Make it yours</h2></div>
+        <p class="editor-intro">Start with a polynomial.<br>We’ll find where it equals zero.</p>
+        <label for="coefficients">Coefficients</label>
+        <div class="coefficient-order" aria-hidden="true"><span>constant</span><span>x</span><span>x²</span><span>x³ …</span></div>
+        <textarea id="coefficients" name="coefficients" rows="2" maxlength="2048" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="coefficient-help form-error">6, -5, -2, 1</textarea>
+        <p id="coefficient-help" class="field-help">Lowest power first. Separate with commas or spaces.</p>
+        <details class="input-help">
+          <summary>A quick guide to coefficients</summary>
+          <p>For <span class="math">x³ − 2x² − 5x + 6</span>, enter <code>6, -5, -2, 1</code>. Include a <code>0</code> for any missing power.</p>
+          <p>Use decimal numbers or scientific notation such as <code>1e-6</code>. This lab accepts up to degree 16.</p>
+        </details>
+
+        <div class="precision-fields">
+          <div><label for="bits">Working precision</label><select id="bits" name="bits"><option value="128">128 bits</option><option value="256" selected>256 bits</option><option value="512">512 bits</option></select></div>
+          <div><label for="digits">Accuracy digits</label><input id="digits" name="digits" type="number" inputmode="numeric" min="1" max="60" step="1" value="30" aria-describedby="precision-help"></div>
+        </div>
+        <p id="precision-help" class="field-help">Absolute error at most 10<sup>−30</sup>. Up to 60 digits at 256 bits.</p>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+        <div class="solve-actions"><button id="solve-button" class="solve-button" type="submit"><span>Find real roots</span><span aria-hidden="true">↗</span></button><button id="cancel-button" class="cancel-button" type="button" hidden>Cancel</button></div>
+        <p id="solver-status" class="solver-status" role="status" aria-live="polite" aria-atomic="true">Ready when you are.</p>
+        <div class="local-note"><span class="local-dot" aria-hidden="true"></span> Computed here, in your browser.</div>
+      </form>
+
+      <section id="plot-panel" class="plot-panel" aria-labelledby="plot-heading">
+        <div class="plot-topline"><div class="section-heading"><span class="step-number">02 /</span><h2 id="plot-heading">Follow the curve</h2></div><span class="approximate-label">APPROXIMATE GRAPH</span></div>
+        <div class="equation-toolbar"><div id="equation" class="equation" aria-live="off"><span class="function-name">f(x) = </span>x<sup>3</sup> − 2x<sup>2</sup> − 5x + 6</div><div class="plot-tools" role="group" aria-label="Graph view controls"><button id="zoom-in" type="button" aria-label="Zoom in">+</button><button id="zoom-out" type="button" aria-label="Zoom out">−</button><button id="reset-view" type="button" aria-label="Reset graph view">Reset <span aria-hidden="true">↺</span></button></div></div>
+        <div class="plot-surface">
+          <svg id="plot" role="img" tabindex="0" aria-labelledby="plot-title plot-description" aria-describedby="plot-keyboard-help">
+            <title id="plot-title">Approximate polynomial graph</title>
+            <desc id="plot-description">The curve shows the current polynomial using ordinary browser arithmetic. The horizontal axis is where f(x) equals zero. Solve to add approximate root markers.</desc>
+            <defs><clipPath id="plot-clip"><rect x="0" y="0" width="1" height="1"></rect></clipPath></defs>
+            <g id="plot-grid" aria-hidden="true"></g>
+            <g id="plot-axes" aria-hidden="true"></g>
+            <g clip-path="url(#plot-clip)" aria-hidden="true"><path id="plot-curve"></path><g id="plot-roots"></g><g id="plot-hover"></g></g>
+            <g id="plot-labels" aria-hidden="true"></g>
+          </svg>
+          <p id="plot-message" class="plot-message" hidden></p>
+        </div>
+        <div class="plot-legend"><span><i class="curve-swatch" aria-hidden="true"></i> Polynomial</span><span id="root-legend"><i class="root-swatch" aria-hidden="true"></i> Roots appear after solving</span><span class="plot-drag-hint">Drag to explore <span aria-hidden="true">↔</span></span></div>
+        <div class="plot-footer"><output id="plot-readout">Hover or tap to inspect the curve</output><span class="graph-caveat">A picture, not a precision check.</span></div>
+        <p id="plot-keyboard-help" class="sr-only">Focus the graph to navigate. Arrow keys pan. Plus and minus zoom. Zero or Home resets the view. Use the mouse wheel while the graph is focused to zoom.</p>
+        <p id="plot-range" class="sr-only" aria-live="polite"></p>
+      </section>
+
+      <section id="results" class="results-panel" aria-labelledby="result-heading" aria-busy="false">
+        <div class="results-topline"><div class="section-heading"><span class="step-number">03 /</span><h2 id="result-heading">Find the meeting points</h2></div><span id="result-badge" class="result-badge">AWAITING YOUR CURIOSITY</span></div>
+        <p id="result-summary" class="result-summary">A root is an x-value where <span class="math">f(x) = 0</span>. Find every distinct real root, even when the curve only touches the axis.</p>
+        <ol id="root-list" class="root-list" aria-label="Computed distinct real roots" hidden></ol>
+        <p id="result-note" class="result-note" hidden></p>
+      </section>
+    </section>
+
+    <aside id="example-note" class="example-note" aria-label="What to notice in this example"><span class="note-label">WHAT TO NOTICE</span><p id="example-explanation">A cubic can cross the axis three times. Follow this curve from left to right, then solve to locate each crossing.</p><span class="note-mark" aria-hidden="true">↗</span></aside>
+
+    <section id="how-it-works" class="learning-section" aria-labelledby="learning-heading">
+      <div class="learning-intro"><p class="eyebrow">A LOOK BENEATH THE SURFACE</p><h2 id="learning-heading">The picture is<br> just the beginning.</h2><p>A graph builds intuition. The mathematics makes sure no real root gets left behind.</p><a href="https://github.com/hollowsunhc/Geode-Root-Solver#mathematics-and-performance" target="_blank" rel="noopener noreferrer">Explore the mathematics <span aria-hidden="true">↗</span></a></div>
+      <div class="field-notes">
+        <article><span class="lesson-number">01</span><div><h3>A root can cross. Or just touch.</h3><p>At a real root, the polynomial is zero. Some roots cross the horizontal axis; others turn around there. Repeated roots appear once in the results.</p></div><svg class="lesson-curve" viewBox="0 0 112 62" role="img" aria-label="A curve touching the zero line and turning upward"><path class="lesson-axis" d="M3 48H109"></path><path class="lesson-path" d="M16 8Q56 88 96 8"></path><circle cx="56" cy="48" r="4"></circle></svg></article>
+        <article><span class="lesson-number">02</span><div><h3>Count first. Then look closer.</h3><p>Geode uses exact arithmetic and a Sturm sequence to count and isolate real roots. Checked Geode refinement and bisection then narrow down their locations.</p></div><svg class="lesson-curve" viewBox="0 0 112 62" role="img" aria-label="An interval around a zero crossing"><path class="lesson-axis" d="M3 34H109"></path><path class="lesson-path" d="M14 55C43 58 63 10 98 9"></path><path class="lesson-bracket" d="M39 14V52M76 14V52"></path></svg></article>
+        <article><span class="lesson-number">03</span><div><h3>More digits. A smaller error.</h3><p>Requesting 30 accuracy digits asks for absolute error at most 10<sup>−30</sup>. MPFR supplies the precision; the graph uses ordinary floating-point numbers and can miss fine detail.</p></div><span class="precision-illustration" aria-hidden="true">10<sup>−30</sup></span></article>
+      </div>
+    </section>
+
+    <section class="fine-print" aria-label="About numerical accuracy"><span class="fine-print-label">ONE IMPORTANT DETAIL</span><p>The accuracy bound applies to the polynomial’s stored binary coefficients. Decimal inputs are rounded at your chosen working precision, so very sensitive or repeated roots can change. Higher precision preserves more of what you enter.</p></section>
+  </main>
+
+  <footer class="site-footer page-width"><p><strong>geode</strong> <span>A little lab for real roots.</span></p><nav aria-label="Project resources"><a href="./source/geode-browser-source.tar.gz" download>Download source</a><a href="./THIRD_PARTY_LICENSES.txt">Licenses</a><a href="https://github.com/hollowsunhc/Geode-Root-Solver/blob/main/docs/WEB_SECURITY.md" target="_blank" rel="noopener noreferrer">Limits &amp; privacy</a><a href="https://github.com/hollowsunhc/Geode-Root-Solver" target="_blank" rel="noopener noreferrer">Made by Patrick Laurin <span aria-hidden="true">↗</span></a></nav></footer>
+  <noscript><p class="noscript-message">This interactive lab needs JavaScript to draw curves and run the solver locally. You can still read the explanations and download the source.</p></noscript>
+</body>
+</html>
