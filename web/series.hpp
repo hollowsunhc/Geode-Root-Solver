@@ -10,22 +10,35 @@ namespace geode::browser {
 
 constexpr unsigned series_order = 8; ///< Highest total degree displayed in the browser.
 constexpr std::size_t rational_characters = 4096; ///< Maximum printed fraction length.
+constexpr std::size_t explained_products = 12;    ///< Worked products per order; sums include all.
+
+/// @brief One exact multi-index product and its unreduced factorial quotient.
+struct SeriesProduct {
+    std::vector<unsigned> exponents; ///< Tuple m2, ..., md.
+    mpz_class numerator;             ///< Factorial of sum k*mk.
+    mpz_class denominator;           ///< (1+sum (k-1)*mk)! times product mk!.
+    mpz_class coefficient;           ///< Integer hyper-Catalan coefficient C_m.
+    mpq value;                       ///< C_m times product tk^mk.
+};
 
 /// @brief One total-degree layer of the hyper-Catalan series and its partial sum.
 struct SeriesStep {
-    unsigned order;      ///< Total degree in the parameters t2, ..., td.
-    mpq coefficient;     ///< Exact coefficient of z^order in S(z).
-    mpq term;            ///< Exact contribution delta times coefficient.
-    HighPrecFloat sum;   ///< Rounded value of a + delta times the partial series.
-    HighPrecFloat bound; ///< Upward-rounded absolute error, including rounding of sum.
+    unsigned order;         ///< Total degree in the parameters t2, ..., td.
+    mpq coefficient;        ///< Exact coefficient of z^order in S(z).
+    mpq term;               ///< Exact contribution delta times coefficient.
+    HighPrecFloat sum;      ///< Rounded value of a + delta times the partial series.
+    HighPrecFloat bound;    ///< Upward-rounded absolute error, including rounding of sum.
+    unsigned product_count; ///< Total products in this order, including those not displayed.
+    std::vector<SeriesProduct> products; ///< Bounded worked examples, never used for the sum.
 };
 
-/// @brief A rational root, a certified local expansion, or a bounded explanation of failure.
+/// @brief A certified root expansion with an optional exact value, or an explanation of failure.
 struct RootSeries {
-    std::string kind = "unavailable"; ///< "exact", "series", or "unavailable".
+    std::string kind = "unavailable"; ///< "series" or "unavailable".
     std::string reason; ///< Explanation when a series cannot be provided within the limits.
     std::size_t reduced_degree = 0; ///< Degree after removing repeated factors.
-    mpq value;                      ///< Exact root for the "exact" case.
+    bool has_exact_value = false;   ///< Whether an exact rational root was identified.
+    mpq value;                      ///< Exact root, displayed alongside its expansion.
     mpq center;                     ///< Rational expansion point a.
     mpq scale;                      ///< Rational change of variable delta, with x = a + delta*y.
     mpq radius; ///< Certified analytic radius rho > 1 for the auxiliary variable z.
@@ -69,6 +82,52 @@ inline detail::RationalPoly shift(detail::RationalPoly p, const mpq& center) {
     return p;
 }
 
+/// @brief Count weak compositions without enumerating them (at most C(22,8)).
+inline unsigned product_count(std::size_t variables, unsigned order) {
+    if (variables == 0)
+        return order == 0 ? 1 : 0;
+    unsigned count = 1;
+    for (unsigned i = 1; i <= order; ++i)
+        count = count * (static_cast<unsigned>(variables) + i - 1) / i;
+    return count;
+}
+
+/**
+ * @brief Enumerate only the first twelve products of one order for the walkthrough.
+ * @note Exact grouped sums are computed separately, including every multi-index.
+ *       Recursion stops at the display cap; it never traverses the omitted tuples.
+ */
+inline void explain_products(const std::vector<mpq>& parameters, unsigned remaining,
+                             std::size_t position, std::vector<unsigned>& exponents,
+                             std::vector<SeriesProduct>& products) {
+    if (products.size() == explained_products)
+        return;
+    if (position == parameters.size()) {
+        if (remaining != 0)
+            return;
+        SeriesProduct product;
+        product.exponents = exponents;
+        product.coefficient = hyper_catalan(exponents).get_num();
+        unsigned weighted = 0;
+        product.value = product.coefficient;
+        for (std::size_t i = 0; i < exponents.size(); ++i) {
+            weighted += static_cast<unsigned>(i + 2) * exponents[i];
+            for (unsigned power = 0; power < exponents[i]; ++power) {
+                product.value *= parameters[i];
+                check_fraction(product.value);
+            }
+        }
+        mpz_fac_ui(product.numerator.get_mpz_t(), weighted);
+        product.denominator = product.numerator / product.coefficient;
+        products.push_back(std::move(product));
+        return;
+    }
+    for (unsigned count = remaining + 1; count > 0 && products.size() < explained_products;) {
+        exponents[position] = --count;
+        explain_products(parameters, remaining - count, position + 1, exponents, products);
+    }
+}
+
 /**
  * @brief Group hyper-Catalan monomials by total degree using exact convolutions.
  * @param report Certified normalization and analytic radius, filled with nine partial sums.
@@ -82,7 +141,7 @@ inline void expand(RootSeries& report) {
     for (auto& power : powers)
         power[0] = 1;
     mpq partial = report.center;
-    mpq tail = 2 * abs(report.scale) / (report.radius - 1);
+    mpq tail = report.parameters.empty() ? mpq(0) : 2 * abs(report.scale) / (report.radius - 1);
     for (unsigned order = 0; order <= series_order; ++order) {
         mpq coefficient = order == 0 ? 1 : 0;
         if (order != 0) {
@@ -109,7 +168,12 @@ inline void expand(RootSeries& report) {
         mpfr_set_q(bound.get_mpfr_ptr(), error.get_mpq_t(), MPFR_RNDU);
         if (!bound.is_finite())
             throw std::length_error("The series error bound exceeds the browser's numeric range.");
-        report.steps.push_back({order, coefficient, term, sum, bound});
+        SeriesStep step{order, coefficient, term,
+                        sum,   bound,       product_count(report.parameters.size(), order),
+                        {}};
+        std::vector<unsigned> exponents(report.parameters.size());
+        explain_products(report.parameters, order, 0, exponents, step.products);
+        report.steps.push_back(std::move(step));
     }
     report.kind = "series";
 }
@@ -120,12 +184,13 @@ inline void expand(RootSeries& report) {
  * @param sequence Sturm sequence of p, empty only for a linear polynomial.
  * @param root Computed root used to propose expansion centers, never to certify them.
  * @param index Zero-based index in the ascending list of distinct real roots.
- * @return An exact root, a certified expansion, or an explicit unavailable status.
+ * @return A certified expansion (including identified exact roots), or an unavailable status.
  *
  * For B=sum k*|tk|*2^(k-1) < 1/4 and rho=1/(2B), the map
  * y -> 1+z*sum tk*y^k is a contraction on |y-1|<=1 for |z|<=rho.
  * Its analytic fixed point has |S(z)|<=2. Exact Sturm counts identify its root
- * branch before any partial sums are reported. At most seven centers are tried.
+ * branch before any partial sums are reported. At most seven precision levels
+ * are tried, with one extra shift when a center is already an exact root.
  */
 inline RootSeries root_series(const detail::RationalPoly& p,
                               const std::vector<detail::RationalPoly>& sequence,
@@ -137,14 +202,18 @@ inline RootSeries root_series(const detail::RationalPoly& p,
         if (p.size() == 2) {
             report.value = -p[0] / p[1];
             check_fraction(report.value);
-            report.kind = "exact";
+            report.has_exact_value = true;
+            report.center = report.value - 1;
+            check_fraction(report.center);
+            report.scale = 1;
+            report.radius = 2; // S(z)=1 is entire; any finite radius above one certifies it.
+            expand(report);
             return report;
         }
         const int left = left_variations(sequence);
         if (root == 0 && p[0] == 0 &&
             left - detail::variations(sequence, mpq(0)) == static_cast<int>(index + 1)) {
-            report.kind = "exact";
-            return report;
+            report.has_exact_value = true;
         }
         const auto bits = static_cast<unsigned>(mpfr_get_prec(root.get_mpfr_srcptr()));
         for (unsigned precision = 8; precision <= bits; precision *= 2) {
@@ -161,15 +230,18 @@ inline RootSeries root_series(const detail::RationalPoly& p,
                              static_cast<mp_bitcnt_t>(exponent));
             report.center = detail::rational(coarse) + offset;
             check_fraction(report.center);
-            const auto shifted = shift(p, report.center);
+            auto shifted = shift(p, report.center);
             if (shifted[0] == 0) {
                 if (left - detail::variations(sequence, report.center) ==
                     static_cast<int>(index + 1)) {
                     report.value = report.center;
-                    report.kind = "exact";
-                    return report;
+                    report.has_exact_value = true;
                 }
-                continue;
+                report.center += offset;
+                check_fraction(report.center);
+                shifted = shift(p, report.center);
+                if (shifted[0] == 0)
+                    continue;
             }
             if (shifted[1] == 0)
                 continue;

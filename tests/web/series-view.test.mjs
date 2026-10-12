@@ -23,14 +23,23 @@ function resultWith(entry) {
   return { degree: 2, bits: 128, digits: 20, roots: ['0.1'], series: [entry] };
 }
 
-test('accepts exact, unavailable, and bounded series representations', async () => {
+/** @brief Supply bounded product metadata without treating mock values as a mathematical proof. */
+function seriesFixture(parameters = ['1/36']) {
+  return {
+    kind: 'series', center: '3/2', scale: '-1/12', parameters, radius: '2', reducedDegree: parameters.length + 1,
+    steps: Array.from({ length: 9 }, (_, order) => {
+      const productCount = parameters.length || order === 0 ? 1 : 0;
+      return { order, coefficient: '1', term: '-1/12', sum: '1.41666666667', bound: '0.01', productCount,
+        products: productCount ? [{ exponents: parameters.map(() => order), numerator: '1', denominator: '1', coefficient: '1', value: '1' }] : [] };
+    }),
+  };
+}
+
+test('accepts bounded expansions, including exact and linear roots', async () => {
   for (const entry of [
-    { kind: 'exact', value: '1/10', reducedDegree: 1 },
+    { ...seriesFixture([]), exactValue: '1/10' },
     { kind: 'unavailable', reason: 'Series exceeded the display limit.', reducedDegree: 2 },
-    {
-      kind: 'series', center: '3/2', scale: '-1/12', parameters: ['1/36'], radius: '2', reducedDegree: 2,
-      steps: Array.from({ length: 9 }, (_, order) => ({ order, coefficient: '1', term: '-1/12', sum: '1.41666666667', bound: '0.01' })),
-    },
+    seriesFixture(),
   ]) {
     const result = resultWith(entry);
     assert.deepEqual(await receive(result), result);
@@ -38,20 +47,18 @@ test('accepts exact, unavailable, and bounded series representations', async () 
 });
 
 test('rejects missing, mismatched, malformed, or oversized formula payloads', async () => {
-  const valid = { kind: 'exact', value: '1/10', reducedDegree: 1 };
-  const series = {
-    kind: 'series', center: '3/2', scale: '-1/12', parameters: ['1/36'], radius: '2', reducedDegree: 2,
-    steps: Array.from({ length: 9 }, (_, order) => ({ order, coefficient: '1', term: '-1/12', sum: '1.41666666667', bound: '0.01' })),
-  };
+  const valid = { ...seriesFixture([]), exactValue: '1/10' };
+  const series = seriesFixture();
   const malformed = [
     { ...resultWith(valid), series: undefined },
     { ...resultWith(valid), series: [] },
     { ...resultWith(valid), roots: ['NaN'] },
     { ...resultWith(valid), roots: ['1'.repeat(4097)] },
     ...[
-      { ...valid, value: '1/0' },
-      { ...valid, value: '<img>' },
-      { ...valid, value: '1'.repeat(4097) },
+      { ...valid, exactValue: '1/0' },
+      { ...valid, exactValue: '<img>' },
+      { ...valid, exactValue: '1'.repeat(4097) },
+      { kind: 'exact', value: '1/10', reducedDegree: 1 },
       { ...valid, reducedDegree: 3 },
       { kind: 'unavailable', reason: 123, reducedDegree: 2 },
       { ...series, parameters: [] },
@@ -68,5 +75,33 @@ test('rejects missing, mismatched, malformed, or oversized formula payloads', as
   ];
   for (const result of malformed) {
     await assert.rejects(receive(result), /invalid result/i);
+  }
+});
+
+test('rejects oversized and malformed worked products before rendering', async () => {
+  const fixture = seriesFixture();
+  const step = fixture.steps[2];
+  const product = step.products[0];
+  const invalid = [
+    { ...step, products: undefined },
+    { ...step, products: [] },
+    { ...step, products: Array(13).fill(product) },
+    { ...step, productCount: 319771 },
+    { ...step, productCount: -1 },
+    { ...step, productCount: 1.5 },
+    ...[
+      { ...product, exponents: [1] },
+      { ...product, exponents: [2, 0] },
+      { ...product, exponents: [2.5] },
+      { ...product, exponents: [-2] },
+      { ...product, coefficient: '2/3' },
+      { ...product, coefficient: '<script>' },
+      { ...product, numerator: '9'.repeat(4097) },
+      { ...product, denominator: '0' },
+      { ...product, value: '1/0' },
+    ].map(product => ({ ...step, products: [product] })),
+  ];
+  for (const entry of invalid) {
+    await assert.rejects(receive(resultWith({ ...fixture, steps: fixture.steps.map(step => step.order === 2 ? entry : step) })), /invalid result/i);
   }
 });

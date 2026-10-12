@@ -23,17 +23,31 @@ function radiusAboveOne(value) {
   return numerator.length > denominator.length || (numerator.length === denominator.length && numerator > denominator);
 }
 
-/** @brief Validate one exact value or certified expansion before exposing it to the view. */
+/** @brief Bound worked products and check their exponent tuples before rendering. */
+function validProducts(step, variables, order) {
+  let count = variables === 0 ? Number(order === 0) : 1;
+  if (variables > 0) for (let i = 1; i <= order; i += 1) count = count * (variables + i - 1) / i;
+  return step.productCount === count && Array.isArray(step.products) &&
+    step.products.length === Math.min(12, count) && step.products.every(product => product &&
+      Array.isArray(product.exponents) && product.exponents.length === variables &&
+      product.exponents.every(exponent => Number.isInteger(exponent) && exponent >= 0 && exponent <= order) &&
+      product.exponents.reduce((sum, exponent) => sum + exponent, 0) === order &&
+      [product.numerator, product.denominator, product.coefficient].every(value => validNumber(value, /^[1-9]\d*$/)) &&
+      validRational(product.value));
+}
+
+/** @brief Validate a certified expansion and any exact value before exposing them to the view. */
 function validSeries(entry, degree) {
   if (!entry || !Number.isInteger(entry.reducedDegree) || entry.reducedDegree < 1 || entry.reducedDegree > degree) return false;
-  if (entry.kind === 'exact') return validRational(entry.value);
+  if (entry.exactValue !== undefined && !validRational(entry.exactValue)) return false;
   if (entry.kind === 'unavailable') return typeof entry.reason === 'string' && entry.reason.length > 0 && entry.reason.length <= 4096;
-  return entry.kind === 'series' && entry.reducedDegree >= 2 && validRational(entry.center) &&
+  return entry.kind === 'series' && validRational(entry.center) &&
     validRational(entry.scale) && !/^[+-]?0+(?:\/|$)/.test(entry.scale) && radiusAboveOne(entry.radius) &&
     Array.isArray(entry.parameters) && entry.parameters.length === entry.reducedDegree - 1 && entry.parameters.every(validRational) &&
     Array.isArray(entry.steps) && entry.steps.length === 9 && entry.steps.every((step, order) => step &&
       step.order === order && validRational(step.coefficient) && validRational(step.term) &&
-      validDecimal(step.sum) && validDecimal(step.bound) && !step.bound.startsWith('-'));
+      validDecimal(step.sum) && validDecimal(step.bound) && !step.bound.startsWith('-') &&
+      validProducts(step, entry.parameters.length, order));
 }
 
 /** @brief Own at most one worker and terminate it on every terminal path. */

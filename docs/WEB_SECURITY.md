@@ -19,7 +19,8 @@ and WebAssembly module; it does not send coefficients to a server.
 | One calculation | 5 seconds after the module is ready |
 | Concurrent calculations | One worker per solver client |
 | WebAssembly linear memory | 128 MiB maximum, including its 2 MiB stack |
-| Analytical expansion | Orders 0 through 8 per root; at most 7 candidate centers |
+| Analytical expansion | Orders 0 through 8 per root; 7 precision levels, at most 2 center checks each |
+| Worked products | At most 12 per order; factorial arguments at most 128 |
 | Exact series fraction | At most 4,096 printed characters |
 
 The page and worker use the same request validator. The C++ entry point independently
@@ -31,8 +32,16 @@ and memory ceiling. Exact fractions are checked during coefficient arithmetic,
 before conversion to decimal text. A controlled fraction-size or convergence
 failure omits only that root's formula; a watchdog timeout or allocation failure
 stops the complete request. The client checks formula counts, numeric formats,
-string lengths, and the number of steps before rendering. Formula values are
+string lengths, and the number of steps before rendering. It also checks product
+counts, tuple lengths, nonnegative integral exponents, total order, and positive
+integer factorial values. Formula values are
 inserted as text, never executed as code or interpreted as HTML.
+
+Worked-product enumeration stops as soon as twelve products have been emitted;
+it does not generate an unbounded list and then truncate it. Full grouped
+coefficients use polynomial convolution independently of this display cap.
+Identified exact roots follow the same workload limits and retain an expansion;
+linear equations show zero higher-order terms without artificial work.
 
 Cancel, a superseding request, timeout, successful completion, and worker errors
 all terminate the worker. This releases its Wasm instance and prevents a stalled
@@ -67,7 +76,9 @@ tests deterministic; normal solving uses the real compiled module.
 of the 120-digit square-root result and exact decimal output for very large roots.
 It also checks preservation of decimal repeated roots, hyper-Catalan series
 coefficients against known values, and independently verifies partial-sum error
-bounds with exact integer arithmetic.
+bounds with exact integer arithmetic. Walkthrough tests check explicit factorial
+quotients, zero and exact roots, and a quartic order with 45 products, confirming
+that displaying only 12 does not truncate the calculated coefficient.
 Graph tests exercise large and degenerate axis ranges so floating-point rounding
 cannot turn tick generation into an unbounded loop. `npm audit` checks development dependencies.
 Passing these checks is evidence for the tested controls, not a promise that every

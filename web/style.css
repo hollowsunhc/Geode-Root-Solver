@@ -155,7 +155,7 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 .series-topline .section-heading h2 { font-size: 19px; }
 .series-selector { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .series-selector label { font-size: 11px; white-space: nowrap; }
-.series-selector select { min-width: 0; max-width: 245px; padding: 8px 10px; border: 1px solid #bac6ed; background: var(--blue-soft); color: var(--blue); font: 12px var(--mono); }
+.series-selector select, .product-picker select { min-width: 0; max-width: 245px; padding: 8px 10px; border: 1px solid #bac6ed; background: var(--blue-soft); color: var(--blue); font: 12px var(--mono); }
 .series-intro { margin-top: 13px; max-width: 780px; font-size: 13px; line-height: 1.8; color: var(--muted); }
 .series-root-value { margin-top: 16px; color: var(--blue); font: 13px/1.8 var(--mono); overflow-wrap: anywhere; }
 .series-note { font-size: 11px; line-height: 1.8; color: var(--muted); }
@@ -163,6 +163,23 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 .series-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 42px; margin-top: 23px; padding-top: 23px; border-top: 1px solid var(--line); }
 .series-layout > div { min-width: 0; }
 .series-layout h3 { font-size: 13px; font-weight: 650; }
+.series-layout h3 + .series-note { margin-top: 9px; }
+.series-order-control { max-width: 650px; margin-top: 20px; }
+.series-guide-step { margin-top: 24px; padding-top: 21px; border-top: 1px solid var(--line); }
+.parameter-preview { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 18px; margin: 16px 0 12px; }
+.parameter-preview > div { min-width: 0; }
+.parameter-preview dt { font: italic 15px Georgia, "Times New Roman", serif; color: var(--muted); }
+.parameter-preview dd { margin: 4px 0 0; font: 11px/1.8 var(--mono); overflow-wrap: anywhere; }
+#series-linear-note { margin-top: 12px; color: var(--ink); }
+#series-product-count { margin-top: 10px; }
+.product-picker { display: grid; gap: 7px; margin-top: 13px; }
+.product-picker label { font-size: 11px; }
+.product-picker select { width: 100%; max-width: 100%; min-height: 38px; }
+.worked-line { margin-top: 13px; font: 12px/1.9 var(--mono); overflow-wrap: anywhere; }
+.worked-line strong { color: var(--blue); font-weight: 600; }
+#series-coefficient { font-size: 20px; }
+#series-product-cap { margin-top: 10px; }
+#series-partial-substitution { font-size: 11px; color: var(--muted); }
 .math-scroll { max-width: 100%; overflow-x: auto; scrollbar-width: thin; padding: 3px 2px; }
 .math-scroll math { width: max-content; margin: 15px auto; font-size: 21px; }
 .root-formula math { margin-block: 17px; font-size: 30px; color: var(--blue); }
@@ -345,6 +362,9 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
   .series-table th:first-child { width: 14%; }
   .exact-terms { font-size: 10px; }
   .parameter-list code { font-size: 11px; }
+  .parameter-preview { gap: 11px; }
+  .parameter-preview dd { font-size: 10px; }
+  .worked-line { font-size: 11px; }
   .partial-sum > output { font-size: 16px; }
   .example-note { align-items: start; flex-wrap: wrap; gap: 7px; margin-top: 24px; padding: 17px 19px; }
   .note-label { flex-basis: 100%; font-size: 8px; }

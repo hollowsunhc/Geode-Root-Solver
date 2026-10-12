@@ -197,9 +197,8 @@ std::string exact_decimal(const geode::HighPrecFloat& value) {
 std::string series_json(const geode::browser::RootSeries& report) {
     std::string result = "{\"kind\":" + quote(report.kind) +
                          ",\"reducedDegree\":" + std::to_string(report.reduced_degree);
-    if (report.kind == "exact") {
-        return result + ",\"value\":" + quote(report.value.get_str()) + '}';
-    }
+    if (report.has_exact_value)
+        result += ",\"exactValue\":" + quote(report.value.get_str());
     if (report.kind == "unavailable") {
         return result + ",\"reason\":" + quote(report.reason) + '}';
     }
@@ -219,7 +218,24 @@ std::string series_json(const geode::browser::RootSeries& report) {
                   ",\"coefficient\":" + quote(step.coefficient.get_str()) +
                   ",\"term\":" + quote(step.term.get_str()) +
                   ",\"sum\":" + quote(exact_decimal(step.sum)) +
-                  ",\"bound\":" + quote(exact_decimal(step.bound)) + '}';
+                  ",\"bound\":" + quote(exact_decimal(step.bound)) +
+                  ",\"productCount\":" + std::to_string(step.product_count) + ",\"products\":[";
+        for (std::size_t i = 0; i < step.products.size(); ++i) {
+            if (i != 0)
+                result += ',';
+            const auto& product = step.products[i];
+            result += "{\"exponents\":[";
+            for (std::size_t k = 0; k < product.exponents.size(); ++k) {
+                if (k != 0)
+                    result += ',';
+                result += std::to_string(product.exponents[k]);
+            }
+            result += "],\"numerator\":" + quote(product.numerator.get_str()) +
+                      ",\"denominator\":" + quote(product.denominator.get_str()) +
+                      ",\"coefficient\":" + quote(product.coefficient.get_str()) +
+                      ",\"value\":" + quote(product.value.get_str()) + '}';
+        }
+        result += "]}";
     }
     return result + "]}";
 }

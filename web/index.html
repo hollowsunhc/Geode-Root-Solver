@@ -108,27 +108,60 @@
       <div id="series-content" hidden>
         <p id="series-root-value" class="series-root-value"></p>
         <p id="series-reduction-note" class="series-note" hidden></p>
-        <div id="series-exact" hidden><p class="exact-root"><var>x</var> = <code id="series-exact-value"></code></p><p class="series-intro">This fraction gives the root exactly. Rational values can also have infinite series representations; this view shows the fraction directly.</p></div>
+        <p id="series-exact" class="exact-root" hidden>Exact value: <var>x</var> = <code id="series-exact-value"></code></p>
         <p id="series-unavailable" class="series-intro" hidden></p>
         <div id="series-expansion" hidden>
-          <p class="series-intro">The infinite series is an exact formula for this root. A finite sum approximates it; the error bound shows how close it is.</p>
+          <p class="series-intro">Follow one product from its exponents to the root’s partial sum. The infinite series gives the root exactly; the bound measures the error of a finite sum.</p>
+          <div class="series-order-control">
+            <div class="order-label"><label for="series-order">Orders included</label><output id="series-order-label" for="series-order"></output></div>
+            <input id="series-order" type="range" min="1" max="9" value="3" step="1" aria-describedby="series-order-help">
+            <p id="series-order-help" class="series-note">Start with <span class="math">s₀ = 1</span>, then add orders. Inspect a product in the highest included order below.</p>
+          </div>
           <div class="series-layout">
             <div class="series-formula-pane">
-              <h3>The root’s analytic formula</h3>
+              <h3>1. Use this root’s values</h3>
               <div class="math-scroll root-formula" tabindex="0" role="group" aria-label="Exact root formula">
-                <math display="block"><msub><mi>x</mi><mn id="series-root-index">1</mn></msub><mo>=</mo><mi>a</mi><mo>+</mo><mi mathvariant="normal">δ</mi><mi>S</mi><mo>(</mo><mrow id="series-arguments"></mrow><mo>)</mo></math>
+                <math display="block"><msub><mi>x</mi><mn id="series-root-index">1</mn></msub><mo>=</mo><mi>a</mi><mo>+</mo><mi mathvariant="normal">δ</mi><mi>S</mi><mrow id="series-arguments"></mrow></math>
               </div>
-              <p class="series-note">The center <var>a</var>, scale <var>δ</var>, and parameters <var>t</var><sub>k</sub> below are exact fractions for the selected root.</p>
+              <div class="math-scroll series-definition" tabindex="0" role="group" aria-label="The Geode series">
+                <math display="block"><mi>S</mi><mo>=</mo><munder><mo>∑</mo><mrow><msub><mi>m</mi><mn>2</mn></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>m</mi><mi>d</mi></msub><mo>≥</mo><mn>0</mn></mrow></munder><msub><mi>C</mi><mi>m</mi></msub><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msubsup><mi>t</mi><mi>k</mi><msub><mi>m</mi><mi>k</mi></msub></msubsup></math>
+              </div>
+              <p class="series-note">The center <var>a</var>, scale <var>δ</var>, and parameters <var>t</var><sub>k</sub> specify this root’s expansion.</p>
+              <dl id="series-parameter-preview" class="parameter-preview"></dl>
+              <p class="series-note">Long fractions are shortened with … throughout this guide. Open the exact values to read them in full.</p>
+              <p id="series-linear-note" class="series-note" hidden>For a linear polynomial, there are no parameters: <span class="math">S = 1 + 0 + 0 + ⋯</span>. Only order 0 contributes. The bound accounts only for rounding the partial sum, so adding zero orders leaves it unchanged.</p>
               <details id="series-parameters-details" class="series-details">
                 <summary>Exact center, scale, and parameters</summary>
                 <dl id="series-parameters" class="parameter-list"></dl>
               </details>
-              <div class="math-scroll series-definition" tabindex="0" role="group" aria-label="The Geode series">
-                <math display="block"><mi>S</mi><mo>=</mo><munder><mo>∑</mo><mrow><msub><mi>m</mi><mn>2</mn></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>m</mi><mi>d</mi></msub><mo>≥</mo><mn>0</mn></mrow></munder><msub><mi>C</mi><mi>m</mi></msub><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msubsup><mi>t</mi><mi>k</mi><msub><mi>m</mi><mi>k</mi></msub></msubsup></math>
+
+              <div class="series-guide-step">
+                <h3>2. Choose a product</h3>
+                <p class="series-note">The exponents <var>m</var><sub>k</sub> are whole numbers at least zero. Their sum is the order <var>j</var>.</p>
+                <p id="series-product-count" class="series-note"></p>
+                <div id="series-product-picker" class="product-picker"><label for="series-product">Exponents in this product</label><select id="series-product" aria-describedby="series-product-count series-product-cap"></select></div>
+                <p id="series-exponents" class="worked-line"></p>
+                <p id="series-product-cap" class="series-note" hidden></p>
               </div>
-              <p class="series-note">Each choice of nonnegative exponents contributes one product. We group products by their total order <span class="math">j = m₂ + ⋯ + m<sub>d</sub></span>.</p>
+              <div id="series-product-calculation">
+                <div class="series-guide-step">
+                  <h3>3. Calculate <var>C</var><sub>m</sub></h3>
+                  <p class="series-note"><var>C</var><sub>m</sub> is the integer weight of this product. It depends on the exponents and degree, not on which root you select.</p>
+                  <div id="series-factorial" class="math-scroll" tabindex="0" role="group" aria-label="Substitute the exponents into the factorial coefficient"></div>
+                  <p class="worked-line"><span class="math">C<sub>m</sub></span> = <span id="series-factorial-ratio"></span> = <strong id="series-coefficient"></strong></p>
+                </div>
+                <div class="series-guide-step">
+                  <h3>4. Substitute this root’s parameters</h3>
+                  <p class="series-note">Multiply the weight by each parameter raised to its chosen exponent. Factors with exponent 0 equal 1.</p>
+                  <div id="series-product-symbolic" class="math-scroll" tabindex="0" role="group" aria-label="Product before substitution"></div>
+                  <div id="series-substitution" class="math-scroll" tabindex="0" role="group" aria-label="Product with this root’s parameter values"></div>
+                  <p class="worked-line">Product value = <strong id="series-product-value"></strong></p>
+                  <details id="series-product-details" class="series-details"><summary>Exact coefficient and product calculation</summary><dl class="parameter-list"><dt>Factorial numerator</dt><dd><code id="series-numerator-exact" tabindex="0"></code></dd><dt>Factorial denominator</dt><dd><code id="series-denominator-exact" tabindex="0"></code></dd><dt>Integer weight C<sub>m</sub></dt><dd><code id="series-coefficient-exact" tabindex="0"></code></dd><dt>Parameter substitution</dt><dd><code id="series-substitution-exact" tabindex="0"></code></dd><dt>Product value</dt><dd><code id="series-product-value-exact" tabindex="0"></code></dd></dl></details>
+                </div>
+              </div>
               <details id="series-math-details" class="series-details">
-                <summary>Coefficients and convergence</summary>
+                <summary>The general formula and convergence</summary>
+                <p>Group the products by their total order <span class="math">j = m₂ + ⋯ + m<sub>d</sub></span> to get <var>s</var><sub>j</sub>.</p>
                 <div class="math-scroll" tabindex="0" role="group" aria-label="Exact series coefficient">
                   <math display="block"><msub><mi>C</mi><mi>m</mi></msub><mo>=</mo><mfrac><mrow><mo>(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mi>k</mi><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo></mrow><mrow><mo>(</mo><mn>1</mn><mo>+</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mo>(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo>)</mo><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msub><mi>m</mi><mi>k</mi></msub><mo>!</mo></mrow></mfrac></math>
                 </div>
@@ -139,13 +172,20 @@
               </details>
             </div>
             <div class="series-convergence-pane">
-              <h3>Add orders and compare the error</h3>
-              <div class="order-label"><label for="series-order">Orders included</label><output id="series-order-label" for="series-order"></output></div>
-              <input id="series-order" type="range" min="1" max="9" value="3" step="1" aria-describedby="series-order-help">
-              <p id="series-order-help" class="series-note">Start with <span class="math">s₀ = 1</span>, then add groups of increasing order. These nine orders may not reach the separately requested numerical-root accuracy.</p>
+              <h3>5. Add the products in this order</h3>
+              <p id="series-group-note" class="series-note"></p>
+              <div id="series-group-formula" class="math-scroll" tabindex="0" role="group" aria-label="Sum the product values in the inspected order"></div>
+              <p id="series-group-value" class="worked-line"></p>
+              <details id="series-group-details" class="series-details"><summary>Exact sum of this order’s products</summary><dl class="parameter-list"><dt>Grouped value s<sub>j</sub></dt><dd><code id="series-group-exact" tabindex="0"></code></dd></dl></details>
+              <div class="series-guide-step">
+                <h3>6. Build the partial sum</h3>
+                <p class="series-note">The partial sum <var>R</var><sub>N</sub> adds orders 0 through <span id="series-last-order"></span>, multiplies by <var>δ</var>, then adds <var>a</var>.</p>
+                <div id="series-partial-formula" class="math-scroll" tabindex="0" role="group" aria-label="Partial sum from the included orders"></div>
+                <p id="series-partial-substitution" class="worked-line"></p>
+              </div>
               <div class="partial-sum" aria-live="polite" aria-atomic="true"><span>Partial sum preview</span><output id="series-sum"></output><p>Certified error bound ≈ <span id="series-bound"></span></p></div>
               <table class="series-table"><caption>Convergence of the selected expansion</caption><thead><tr><th scope="col">Order <var>j</var></th><th scope="col">Sum preview</th><th scope="col">Error bound preview</th></tr></thead><tbody id="series-steps"></tbody></table>
-              <p class="series-note">Previews shorten the numbers. The bound applies to the full partial sum below.</p>
+              <p class="series-note">The bound applies to the full partial sum below. These nine orders may not reach the separately requested numerical-root accuracy.</p>
               <details id="series-sum-details" class="series-details"><summary>Full partial sum and certified bound</summary><dl class="parameter-list"><dt>Partial sum</dt><dd><code id="series-full-sum" tabindex="0"></code></dd><dt>Absolute error at most</dt><dd><code id="series-full-bound" tabindex="0"></code></dd></dl></details>
               <details id="series-terms-details" class="series-details"><summary>Exact terms in this partial sum</summary><p>For each order <var>j</var>, <span class="math">s<sub>j</sub></span> is the sum of its products. The contribution to <var>x</var> is <span class="math">δs<sub>j</sub></span>; the center <var>a</var> is added once.</p><table class="series-table exact-terms"><thead><tr><th scope="col">Order</th><th scope="col"><span class="math">s<sub>j</sub></span></th><th scope="col"><span class="math">δs<sub>j</sub></span></th></tr></thead><tbody id="series-terms"></tbody></table></details>
             </div>

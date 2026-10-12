@@ -22,8 +22,14 @@ printed digits. Decimal input coefficients are kept as exact rational numbers:
 After solving, select a root in **Root formula** to inspect its analytical
 expression, exact rational parameters, and first nine total-degree layers.
 The partial-sum control shows how the approximation and its certified error
-bound change. Exact rational roots identified by the formula calculation are
-shown as fractions. The infinite series represents the root exactly; a finite
+bound change. Select a product to see its exponent tuple, factorial calculation
+of `C[m]`, and substitution of the selected root's parameters. These products add
+up to the grouped coefficient `sj`. `C[m]` depends on the exponents, not the root;
+changing roots changes the parameters `tk`.
+
+Exact rational roots identified by the formula calculation are shown as fractions
+alongside their expansions. For a linear equation, `S = 1 + 0 + 0 + ...`;
+the higher-order terms vanish. The infinite series represents the root exactly; a finite
 partial sum is an approximation. The analytical series section below describes
 the convergence certificate and its limits.
 
@@ -301,6 +307,13 @@ The browser groups monomials by total degree using an auxiliary variable:
 `s0` through `s8` without enumerating every multi-index. The first layers are
 `s0=1`, `s1=sum tk`, and `s2=(sum tk)*(sum k*tk)`.
 
+For the evaluation walkthrough, up to twelve products per order are computed
+with the same exact `hyper_catalan` function exposed by the native library.
+For example, in a cubic, `m=(1,1)` gives `C[m]=5!/(4!*1!*1!)=5`, so its
+contribution is `5*t2*t3`. When an order has more than twelve products, the
+walkthrough states the full count; its grouped coefficient and partial sum
+still include every product.
+
 Each displayed expansion has a convergence certificate. Let
 `B = sum k*abs(tk)*2^(k-1)`. The browser requires `0 < B < 1/4` and sets
 `rho = 1/(2*B)`. For complex `abs(z) <= rho`, the fixed-point map is a contraction
@@ -309,10 +322,15 @@ Cauchy's coefficient bound then gives the absolute truncation error after order
 `N` as at most `2*abs(delta)*rho^(-N)/(rho-1)`. The reported bound also includes
 the exact rounding error of the displayed MPFR partial sum and is rounded upward.
 Abbreviated previews are marked approximate; the bound applies to the full sum.
+For a linear polynomial, `S(z)=1` is entire and the truncation error is zero.
+The reported bound still includes finite-precision rounding, which can be nonzero
+for an exact rational root such as `1/3`.
 
 Exact Sturm counts check which root the expansion describes. Centers that fail
-the convergence or branch check are rejected. The browser tries at most seven
-centers and limits exact fractions to 4,096 characters. If those limits prevent
+the convergence or branch check are rejected. When a center is itself an exact
+root, it is shifted once more to construct the expansion while retaining the
+exact value. The browser tries at most seven precision levels, with up to two
+center checks each, and limits exact fractions to 4,096 characters. If those limits prevent
 a formula, the numerical result remains available with an explanation. A worker
 timeout or memory failure stops the entire request. Nine displayed layers need
 not reach the accuracy requested for the separately computed numerical root.
