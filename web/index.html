@@ -21,7 +21,7 @@
     </a>
     <nav aria-label="Main navigation">
       <a class="nav-active" href="#lab">The lab</a>
-      <a href="#how-it-works">How it works</a>
+      <a href="#why-catalan">How it works</a>
       <a class="github-link" href="https://github.com/hollowsunhc/Geode-Root-Solver" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
     </nav>
   </header>
@@ -123,7 +123,7 @@
               <div class="math-scroll root-formula" tabindex="0" role="group" aria-label="Exact root formula">
                 <math display="block"><msub><mi>x</mi><mn id="series-root-index">1</mn></msub><mo>=</mo><mi>a</mi><mo>+</mo><mi mathvariant="normal">δ</mi><mi>S</mi><mrow id="series-arguments"></mrow></math>
               </div>
-              <div class="math-scroll series-definition" tabindex="0" role="group" aria-label="The Geode series">
+              <div class="math-scroll series-definition" tabindex="0" role="group" aria-label="The hyper-Catalan series">
                 <math display="block"><mi>S</mi><mo>=</mo><munder><mo>∑</mo><mrow><msub><mi>m</mi><mn>2</mn></msub><mo>,</mo><mo>…</mo><mo>,</mo><msub><mi>m</mi><mi>d</mi></msub><mo>≥</mo><mn>0</mn></mrow></munder><msub><mi>C</mi><mi>m</mi></msub><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msubsup><mi>t</mi><mi>k</mi><msub><mi>m</mi><mi>k</mi></msub></msubsup></math>
               </div>
               <p class="series-note">The center <var>a</var>, scale <var>δ</var>, and parameters <var>t</var><sub>k</sub> specify this root’s expansion.</p>
@@ -150,6 +150,7 @@
                     <math display="block"><msub><mi>C</mi><mi>m</mi></msub><mo>=</mo><mfrac><mrow><mo>(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mi>k</mi><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo></mrow><mrow><mo>(</mo><mn>1</mn><mo>+</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mo>(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo>)</mo><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msub><mi>m</mi><mi>k</mi></msub><mo>!</mo></mrow></mfrac></math>
                   </div>
                   <p class="series-note"><var>C</var><sub>m</sub> is the integer weight of this product. It depends on the exponents and degree, not on which root you select.</p>
+                  <p class="series-note"><a href="#why-catalan">Why Catalan numbers appear in this formula</a></p>
                   <p class="series-note">With the selected exponents:</p>
                   <div id="series-factorial" class="math-scroll" tabindex="0" role="group" aria-label="Substitute the exponents into the factorial coefficient"></div>
                   <p class="worked-line"><span class="math">C<sub>m</sub></span> = <span id="series-factorial-ratio"></span> = <strong id="series-coefficient"></strong></p>
@@ -196,6 +197,81 @@
     </section>
 
     <aside id="example-note" class="example-note" aria-label="What to notice in this example"><span class="note-label">WHAT TO NOTICE</span><p id="example-explanation">A cubic can cross the axis three times. Follow this curve from left to right, then solve to locate each crossing.</p><span class="note-mark" aria-hidden="true">↗</span></aside>
+
+    <section id="why-catalan" class="learning-section" aria-labelledby="catalan-heading">
+      <div class="learning-intro">
+        <p class="eyebrow">BEHIND THE FORMULA</p>
+        <h2 id="catalan-heading">Why Catalan<br> numbers appear.</h2>
+        <p>The coefficient <var>C</var><sub>m</sub> begins as a count. Start with triangles, allow more kinds of pieces, then read the same counting rule as a root equation.</p>
+        <a href="#series-panel">Back to the worked formula <span aria-hidden="true">↑</span></a>
+      </div>
+      <div class="catalan-story">
+        <article>
+          <h3>Start by dividing a polygon</h3>
+          <p>Draw noncrossing diagonals in a convex polygon until every piece is a triangle. A triangle has one triangulation; a square has two; a pentagon has five. These are the <strong>Catalan numbers</strong>: <var>C</var><sub>n</sub> counts the ways to divide an (<var>n</var> + 2)-gon into <var>n</var> triangles. A bare edge supplies the starting case, <span class="math">C₀ = 1</span>.</p>
+          <div class="math-scroll" tabindex="0" role="group" aria-label="Catalan numbers and their factorial formula">
+            <math display="block"><msub><mi>C</mi><mi>n</mi></msub><mo>=</mo><mfrac><mrow><mo>(</mo><mn>2</mn><mi>n</mi><mo>)</mo><mo>!</mo></mrow><mrow><mo>(</mo><mi>n</mi><mo>+</mo><mn>1</mn><mo>)</mo><mo>!</mo><mi>n</mi><mo>!</mo></mrow></mfrac><mo>:</mo><mspace width="0.5em"/><mn>1</mn><mo>,</mo><mn>1</mn><mo>,</mo><mn>2</mn><mo>,</mo><mn>5</mn><mo>,</mo><mn>14</mn><mo>,</mo><mo>…</mo></math>
+          </div>
+          <p>Fix one boundary edge. The triangle touching it leaves two regions, each either bare or triangulated in the same way. Give each triangle a factor <var>t</var>, and collect all the counts in a series <var>C</var>(<var>t</var>). Then:</p>
+          <div class="math-scroll" tabindex="0" role="group" aria-label="The Catalan counting rule">
+            <math display="block"><mrow><mi>C</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow><mo>=</mo><mn>1</mn><mo>+</mo><mi>t</mi><msup><mrow><mi>C</mi><mo>(</mo><mi>t</mi><mo>)</mo></mrow><mn>2</mn></msup></math>
+          </div>
+          <p>The <span class="math">1</span> records the bare edge. The square combines the two independent region choices; <var>t</var> records the triangle joining them. This is why a counting problem produces a quadratic equation.</p>
+        </article>
+        <article>
+          <h3>Now allow different pieces</h3>
+          <p>Keep the boundary edge fixed, but allow quadrilaterals, pentagons, and larger pieces too. A (<var>k</var> + 1)-sided piece touching that edge leaves <var>k</var> regions to fill. Give that piece a factor <var>t</var><sub>k</sub>. The same rule becomes:</p>
+          <div class="math-scroll" tabindex="0" role="group" aria-label="The hyper-Catalan counting rule">
+            <math display="block"><mi>S</mi><mo>=</mo><mn>1</mn><mo>+</mo><msub><mi>t</mi><mn>2</mn></msub><msup><mi>S</mi><mn>2</mn></msup><mo>+</mo><msub><mi>t</mi><mn>3</mn></msub><msup><mi>S</mi><mn>3</mn></msup><mo>+</mo><mo>⋯</mo><mo>+</mo><msub><mi>t</mi><mi>d</mi></msub><msup><mi>S</mi><mi>d</mi></msup></math>
+          </div>
+          <p>Now <var>m</var><sub>k</sub> counts the (<var>k</var> + 1)-sided pieces. Subdivisions with the same piece counts contribute the same product of parameters. Its coefficient <var>C</var><sub>m</sub> counts how many such subdivisions there are: a <strong>hyper-Catalan number</strong>. <a href="https://arxiv.org/html/2507.04552v1#S1" target="_blank" rel="noopener noreferrer">Rubine’s polygon construction</a> gives this rule precisely.</p>
+          <figure class="polygon-example">
+            <div class="polygon-row" role="img" aria-label="All five diagonals of a pentagon, shown separately. Each divides the same fixed pentagon into one triangle and one quadrilateral. The thick bottom edge stays fixed.">
+              <svg viewBox="0 0 100 100" aria-hidden="true"><path class="polygon-outline" d="M20 86L80 86L98 30L50 2L2 30Z"/><path class="polygon-triangle" d="M20 86L80 86L98 30Z"/><path class="polygon-cut" d="M20 86L98 30"/><path class="polygon-roof" d="M20 86H80"/></svg>
+              <svg viewBox="0 0 100 100" aria-hidden="true"><path class="polygon-outline" d="M20 86L80 86L98 30L50 2L2 30Z"/><path class="polygon-triangle" d="M80 86L98 30L50 2Z"/><path class="polygon-cut" d="M80 86L50 2"/><path class="polygon-roof" d="M20 86H80"/></svg>
+              <svg viewBox="0 0 100 100" aria-hidden="true"><path class="polygon-outline" d="M20 86L80 86L98 30L50 2L2 30Z"/><path class="polygon-triangle" d="M98 30L50 2L2 30Z"/><path class="polygon-cut" d="M98 30H2"/><path class="polygon-roof" d="M20 86H80"/></svg>
+              <svg viewBox="0 0 100 100" aria-hidden="true"><path class="polygon-outline" d="M20 86L80 86L98 30L50 2L2 30Z"/><path class="polygon-triangle" d="M50 2L2 30L20 86Z"/><path class="polygon-cut" d="M50 2L20 86"/><path class="polygon-roof" d="M20 86H80"/></svg>
+              <svg viewBox="0 0 100 100" aria-hidden="true"><path class="polygon-outline" d="M20 86L80 86L98 30L50 2L2 30Z"/><path class="polygon-triangle" d="M2 30L20 86L80 86Z"/><path class="polygon-cut" d="M2 30L80 86"/><path class="polygon-roof" d="M20 86H80"/></svg>
+            </div>
+            <figcaption>One triangle and one quadrilateral, five ways. Each picture contributes <span class="math">t₂t₃</span>, so together they give <span class="math">5t₂t₃</span>. Keep the vertices in place; rotated subdivisions count separately.</figcaption>
+          </figure>
+          <p>This is the <span class="math">C<sub>(1,1)</sub> = 5</span> in a cubic’s order 2. Its numerical contribution is <span class="math">5t₂t₃</span>, using the selected root’s parameters.</p>
+          <details id="catalan-factorials" class="series-details">
+            <summary>Where the factorial formula comes from</summary>
+            <p>Let <span class="math">j = ∑m<sub>k</sub></span> count the pieces, <span class="math">K = ∑k m<sub>k</sub></span>, and <span class="math">M = ∏m<sub>k</sub>!</span>, with all indices from 2 to <var>d</var>. Mark each piece with an extra variable <var>z</var> and put <span class="math">U = S(zt₂, …, zt<sub>d</sub>) − 1</span>. Then:</p>
+            <div class="math-scroll" tabindex="0" role="group" aria-label="Equation for the series without its constant term">
+              <math display="block"><mi>U</mi><mo>=</mo><mi>z</mi><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msub><mi>t</mi><mi>k</mi></msub><msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>U</mi><mo>)</mo></mrow><mi>k</mi></msup></math>
+            </div>
+            <p><a href="https://arxiv.org/abs/1609.05988" target="_blank" rel="noopener noreferrer">Lagrange inversion</a> extracts coefficients from an equation like this. For <span class="math">j ≥ 1</span>, it says:</p>
+            <div class="math-scroll" tabindex="0" role="group" aria-label="Lagrange inversion coefficient identity">
+              <math display="block"><mrow><mo>[</mo><msup><mi>z</mi><mi>j</mi></msup><mo>]</mo></mrow><mi>U</mi><mo>=</mo><mfrac><mn>1</mn><mi>j</mi></mfrac><mrow><mo>[</mo><msup><mi>u</mi><mrow><mi>j</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>]</mo></mrow><msup><mrow><mo>(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msub><mi>t</mi><mi>k</mi></msub><msup><mrow><mo>(</mo><mn>1</mn><mo>+</mo><mi>u</mi><mo>)</mo></mrow><mi>k</mi></msup><mo>)</mo></mrow><mi>j</mi></msup></math>
+            </div>
+            <p>The brackets mean “take the coefficient of this power.” Choosing the piece types across the <var>j</var> factors gives <span class="math">j! / M</span> choices. Their powers of (<span class="math">1 + u</span>) add to <var>K</var>; its <span class="math">u<sup>j−1</sup></span> coefficient is the binomial coefficient below.</p>
+            <div class="math-scroll" tabindex="0" role="group" aria-label="Derivation of the hyper-Catalan factorial formula">
+              <math display="block"><msub><mi>C</mi><mi>m</mi></msub><mo>=</mo><mfrac><mn>1</mn><mi>j</mi></mfrac><mo>×</mo><mfrac><mrow><mi>j</mi><mo>!</mo></mrow><mi>M</mi></mfrac><mo>×</mo><mrow><mo>(</mo><mfrac linethickness="0"><mi>K</mi><mrow><mi>j</mi><mo>−</mo><mn>1</mn></mrow></mfrac><mo>)</mo></mrow><mo>=</mo><mfrac><mrow><mi>K</mi><mo>!</mo></mrow><mrow><mo>(</mo><mi>K</mi><mo>−</mo><mi>j</mi><mo>+</mo><mn>1</mn><mo>)</mo><mo>!</mo><mi>M</mi></mrow></mfrac></math>
+            </div>
+            <p>Since <span class="math">K − j + 1 = 1 + ∑(k − 1)m<sub>k</sub></span>, this is the formula in step 3. With no pieces, the separate starting case is <span class="math">C<sub>(0,…,0)</sub> = 1</span>. With only triangles, <span class="math">m₂ = n</span> and all other counts zero, it reduces to the ordinary Catalan formula above.</p>
+          </details>
+        </article>
+        <article>
+          <h3>Read the counting rule as a root equation</h3>
+          <p>Return to the polynomial. The solver shifts and scales the variable, <span class="math">x = a + δy</span>, to put the equation into this form (after removing repeated factors):</p>
+          <div class="math-scroll" tabindex="0" role="group" aria-label="The normalized polynomial equation">
+            <math display="block"><mi>y</mi><mo>=</mo><mn>1</mn><mo>+</mo><msub><mi>t</mi><mn>2</mn></msub><msup><mi>y</mi><mn>2</mn></msup><mo>+</mo><msub><mi>t</mi><mn>3</mn></msub><msup><mi>y</mi><mn>3</mn></msup><mo>+</mo><mo>⋯</mo><mo>+</mo><msub><mi>t</mi><mi>d</mi></msub><msup><mi>y</mi><mi>d</mi></msup></math>
+          </div>
+          <p>It is the same equation that the counting series <var>S</var> satisfies. Once that series converges, set <span class="math">y = S</span> and undo the change of variable: <span class="math">x = a + δS</span>. The parameters now have numerical values; a negative parameter can make a product negative even though <var>C</var><sub>m</sub> is a positive count.</p>
+          <p>The counting rule gives a <em>formal</em> series first: an identity between coefficients. Numerical convergence is a separate question. This lab chooses parameters for each root, certifies local convergence, and checks which root the series reaches. That is why the weights stay the same while the values and error bounds change.</p>
+          <details id="catalan-geode" class="series-details">
+            <summary>How the Geode fits in</summary>
+            <p>The root series is <var>S</var>. The related series called the Geode is <var>G</var>, defined by the formal factorization:</p>
+            <div class="math-scroll" tabindex="0" role="group" aria-label="The Geode factorization of the hyper-Catalan series">
+              <math display="block"><mi>S</mi><mo>−</mo><mn>1</mn><mo>=</mo><mo>(</mo><msub><mi>t</mi><mn>2</mn></msub><mo>+</mo><msub><mi>t</mi><mn>3</mn></msub><mo>+</mo><mo>⋯</mo><mo>+</mo><msub><mi>t</mi><mi>d</mi></msub><mo>)</mo><mi>G</mi></math>
+            </div>
+            <p><var>S</var> and <var>G</var> have different coefficient arrays. The worked formula shows the hyper-Catalan coefficients of <var>S</var>; the numerical solver also uses checked Geode refinement. <a href="https://arxiv.org/html/2507.09405v2#S2" target="_blank" rel="noopener noreferrer">Gessel’s Geode identity</a> explains the connection.</p>
+          </details>
+        </article>
+      </div>
+    </section>
 
     <section id="how-it-works" class="learning-section" aria-labelledby="learning-heading">
       <div class="learning-intro"><p class="eyebrow">THE METHOD</p><h2 id="learning-heading">Root isolation<br> and precision.</h2><p>Exact root counts establish which roots exist. Certified refinement controls the error in their decimal approximations.</p><a href="https://github.com/hollowsunhc/Geode-Root-Solver#mathematics-and-performance" target="_blank" rel="noopener noreferrer">Read the mathematics <span aria-hidden="true">↗</span></a></div>

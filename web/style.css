@@ -223,6 +223,22 @@ textarea { width: 100%; min-height: 76px; resize: vertical; padding: 13px; backg
 .learning-intro > p:not(.eyebrow) { font-size: 13px; color: var(--muted); line-height: 1.8; max-width: 285px; }
 .learning-intro a { display: inline-block; margin-top: 23px; color: var(--blue); font-size: 11px; text-decoration: none; border-bottom: 1px solid #c3ccef; padding-bottom: 3px; }
 .learning-intro a span { margin-left: 14px; }
+.catalan-story { min-width: 0; }
+.catalan-story article { border-top: 1px solid var(--line); padding: 21px 0 25px; }
+.catalan-story h3 { font-size: 17px; font-weight: 600; }
+.catalan-story p { margin-top: 13px; font-size: 13px; line-height: 1.85; }
+.catalan-story a, .series-note a { color: var(--blue); }
+.catalan-story .series-details { padding-top: 15px; }
+.catalan-story .series-details summary { font-size: 12px; }
+.catalan-story .series-details p { font-size: 12px; }
+.polygon-example { margin: 22px 0; padding: 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 7px; }
+.polygon-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.polygon-row svg { width: 80px; height: 80px; overflow: visible; stroke-linejoin: round; }
+.polygon-outline { fill: var(--blue-soft); stroke: var(--blue); stroke-width: 1.5; }
+.polygon-triangle { fill: #f4ded2; stroke: var(--coral); stroke-width: 1.5; }
+.polygon-cut { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+.polygon-roof { fill: none; stroke: var(--ink); stroke-width: 4; }
+.polygon-example figcaption { margin-top: 14px; color: var(--muted); font-size: 12px; line-height: 1.8; }
 .field-notes article { display: grid; grid-template-columns: 24px minmax(0, 1fr) 105px; gap: 17px; border-top: 1px solid var(--line); padding: 19px 0 21px; align-items: start; }
 .lesson-number { color: var(--coral); font: 10px var(--mono); padding-top: 4px; }
 .field-notes h3 { font-size: 14px; font-weight: 600; margin-bottom: 7px; }
