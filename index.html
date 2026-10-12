@@ -146,7 +146,11 @@
               <div id="series-product-calculation">
                 <div class="series-guide-step">
                   <h3>3. Calculate <var>C</var><sub>m</sub></h3>
+                  <div id="series-general-coefficient" class="math-scroll" tabindex="0" role="group" aria-label="General hyper-Catalan coefficient">
+                    <math display="block"><msub><mi>C</mi><mi>m</mi></msub><mo>=</mo><mfrac><mrow><mo>(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mi>k</mi><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo></mrow><mrow><mo>(</mo><mn>1</mn><mo>+</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mo>(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo>)</mo><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msub><mi>m</mi><mi>k</mi></msub><mo>!</mo></mrow></mfrac></math>
+                  </div>
                   <p class="series-note"><var>C</var><sub>m</sub> is the integer weight of this product. It depends on the exponents and degree, not on which root you select.</p>
+                  <p class="series-note">With the selected exponents:</p>
                   <div id="series-factorial" class="math-scroll" tabindex="0" role="group" aria-label="Substitute the exponents into the factorial coefficient"></div>
                   <p class="worked-line"><span class="math">C<sub>m</sub></span> = <span id="series-factorial-ratio"></span> = <strong id="series-coefficient"></strong></p>
                 </div>
@@ -160,11 +164,8 @@
                 </div>
               </div>
               <details id="series-math-details" class="series-details">
-                <summary>The general formula and convergence</summary>
+                <summary>Grouping and convergence</summary>
                 <p>Group the products by their total order <span class="math">j = m₂ + ⋯ + m<sub>d</sub></span> to get <var>s</var><sub>j</sub>.</p>
-                <div class="math-scroll" tabindex="0" role="group" aria-label="Exact series coefficient">
-                  <math display="block"><msub><mi>C</mi><mi>m</mi></msub><mo>=</mo><mfrac><mrow><mo>(</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mi>k</mi><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo></mrow><mrow><mo>(</mo><mn>1</mn><mo>+</mo><munderover><mo>∑</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><mo>(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo>)</mo><msub><mi>m</mi><mi>k</mi></msub><mo>)</mo><mo>!</mo><munderover><mo>∏</mo><mrow><mi>k</mi><mo>=</mo><mn>2</mn></mrow><mi>d</mi></munderover><msub><mi>m</mi><mi>k</mi></msub><mo>!</mo></mrow></mfrac></math>
-                </div>
                 <p>The first grouped coefficients are:</p>
                 <div class="first-coefficients"><span class="math">s₀ = 1</span><span class="math">s₁ = ∑<sub>k=2,…,d</sub> t<sub>k</sub></span><span class="math">s₂ = ½ ∑<sub>k,l=2,…,d</sub> (k + l) t<sub>k</sub> t<sub>l</sub></span></div>
                 <p>The change of variable is <span class="math">x = a + δy</span>. Its root equation becomes <span class="math">y = 1 + ∑<sub>k=2,…,d</sub> t<sub>k</sub>y<sup>k</sup></span>, and <var>S</var> selects the branch near 1.</p>
